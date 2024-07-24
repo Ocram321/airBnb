@@ -3,12 +3,6 @@
   "version": "1.0.0",
   "description": "## Database Schema Design",
   "main": "index.js",
-  "dependencies": {
-    "express-validator": "^7.1.0",
-    "lodash": "^4.17.21",
-    "validator": "^13.12.0"
-  },
-  "devDependencies": {},
   "scripts": {
     "install": "npm --prefix backend install backend",
     "dev:backend": "npm install --prefix backend start",
