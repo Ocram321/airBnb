@@ -16,10 +16,12 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       review: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        
       },
       stars: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
       createdAt: {
         allowNull: false,
