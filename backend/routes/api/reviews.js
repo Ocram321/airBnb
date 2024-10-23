@@ -1,7 +1,7 @@
 //backend/routes/api/reviews.js
 const express = require("express");
 const { Review, Spot, User, ReviewImage } = require("../../db/models");
-const { requireAuth } = require("../../utils");
+const { requireAuth } = require("../../utils/auth");
 const router = express.Router();
 
 //1. Get all Reviews of Current User
@@ -117,3 +117,5 @@ router.delete("/reviews/:id", async (req, res) => {
         res.status(500).json({ error: "Failed to delete the review" });
     }
 });
+
+module.exports = router
