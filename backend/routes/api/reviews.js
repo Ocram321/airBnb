@@ -117,3 +117,5 @@ router.delete("/reviews/:id", async (req, res) => {
         res.status(500).json({ error: "Failed to delete the review" });
     }
 });
+
+module.exports = router;
