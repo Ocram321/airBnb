@@ -1,7 +1,7 @@
 //backend/routes/api/reviews.js
 const express = require("express");
 const { Review, Spot, User, ReviewImage } = require("../../db/models");
-const { requireAuth } = require("../../utils");
+const { requireAuth } = require("../../utils/auth.js");
 const router = express.Router();
 
 //1. Get all Reviews of Current User
