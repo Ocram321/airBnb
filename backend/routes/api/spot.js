@@ -3,6 +3,38 @@ const { Spot } = require("../../db/models"); // Assuming models are in a folder 
 const router = express.Router();
 const { setTokenCookie, requireAuth, restoreUser } = require('../../utils/auth')
 
+
+
+const validateSpot = [
+    check('address')
+        .exists({ checkFalsy: true})
+        .withMessage('Street address is required'),
+    check('city')
+        .exists({ checkFalsy: true})
+        .withMessage('City is required'),
+    check('state')
+        .exists({ checkFalsy: true})
+        .withMessage('State is required'),
+    check('country')
+        .exists({ checkFalsy: true})
+        .withMessage('Country is required'),
+    check('lat')
+        .exists({ checkFalsy: true})
+        .withMessage('Latitude must be within -90 and 90'),
+    check('lng')
+        .exists({ checkFalsy: true})
+        .withMessage('Longitude must be within -180 and 180'),
+    check('name')
+        .exists({ checkFalsy: true})
+        .withMessage('Name must be less than 50 characters'),
+    check('description')
+        .exists({ checkFalsy: true})
+        .withMessage('Description is required'),
+    check('price')
+        .exists({ checkFalsy: true})
+        .withMessage('Price per day must be a positive number'),
+    handleValidationErrors
+];
 // Route: Get all Spots
 // Method: GET
 // Path: /api/spots
@@ -16,7 +48,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Route: Get all Spots owned by the Current User
+// Route: Get all Spgots owned by the Current User
 // Method: GET
 // Path: /api/spots/current
 // Description: Fetches all spots created by the current authenticated user.
@@ -55,7 +87,7 @@ router.get('/:spotId', async (req, res) => {
 // Method: POST
 // Path: /api/spots
 // Description: Creates a new spot and returns the created spot data.
-router.post('/', requireAuth, async (req, res) => {
+router.post('/', requireAuth, validateSpot, async (req, res) => {
     // Placeholder for authentication middleware
     // Assume req.user contains the logged-in user
     const userId = req.user.id;
