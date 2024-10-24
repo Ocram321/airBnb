@@ -1,6 +1,8 @@
 const express = require('express');
 const { Spot } = require("../../db/models"); // Assuming models are in a folder named models
 const router = express.Router();
+const { handleValidationErrors } = require('../../utils/validation');
+const { check } = require('express-validator');
 const { setTokenCookie, requireAuth, restoreUser } = require('../../utils/auth');
 
 
