@@ -1,7 +1,7 @@
 const express = require('express');
 const { Spot } = require("../../db/models"); // Assuming models are in a folder named models
 const router = express.Router();
-const { setTokenCookie, requireAuth, restoreUser } = require('../../utils/auth')
+const { setTokenCookie, requireAuth, restoreUser } = require('../../utils/auth');
 
 
 
