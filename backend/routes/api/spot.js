@@ -1,7 +1,7 @@
 const express = require('express');
 const { Spot } = require("../../db/models"); // Assuming models are in a folder named models
 const router = express.Router();
-const { requireAuth } = require("../../utils/auth.js");
+const { setTokenCookie, requireAuth, restoreUser } = require('../../utils/auth')
 
 // Route: Get all Spots
 // Method: GET
@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
 // Method: GET
 // Path: /api/spots/current
 // Description: Fetches all spots created by the current authenticated user.
-router.get('/current', requireAuth, async (req, res) => {
+router.get('/current', restoreUser, requireAuth, async (req, res) => {
     // Placeholder for authentication middleware
     // Assume req.user contains the logged-in user
     const userId = req.user.id;
