@@ -1,7 +1,21 @@
 const express = require("express");
 const { Review, Spot, User, ReviewImage } = require("../../db/models");
 const { requireAuth } = require("../../utils/auth.js");
+const { handleValidationErrors } = require('../../utils/validation');
+const { check } = require('express-validator');
 const router = express.Router();
+
+const validateReview = [
+    check('review')
+        .exists({ checkFalsy: true})
+        .withMessage('Review text is required'),
+    check('stars')
+        .exists({ checkFalsy: true })
+        .isInt({min: 1, max: 5})
+        .withMessage('Stars must be an integer from 1 to 5'),
+        handleValidationErrors]
+
+
 
 // 1. Get all Reviews of the Current User
 router.get("/reviews/current", requireAuth, async (req, res) => {
@@ -67,8 +81,11 @@ router.get("/spots/:spotId/reviews", async (req, res) => {
     }
 });
 
+
+
+
 // 3. Create a Review for a Spot based on the Spot's id
-router.post("/spots/:spotId/reviews", requireAuth, async (req, res) => {
+router.post("/spots/:spotId/reviews", requireAuth, validateReview, async (req, res) => {
     const { spotId } = req.params;
     const { review, stars } = req.body;
 
