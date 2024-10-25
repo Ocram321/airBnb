@@ -1,10 +1,17 @@
 "use strict";
 
+const { options } = require('../../routes/api/spotimages');
+let options = {};
+if (process.env.NODE_ENV === "production") {
+    options.schema = process.env.SCHEMA; // Define your schema in options object
+}
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     up: async (queryInterface, Sequelize) => {
+        options.tableName = "SpotImages";
         return queryInterface.bulkInsert(
-            "SpotImages",
+            options,
             [
                 {
                     spotId: 1,
@@ -27,6 +34,7 @@ module.exports = {
     },
 
     down: async (queryInterface, Sequelize) => {
-        return queryInterface.bulkDelete("SpotImages", null, {});
+        options.tableName = "SpotImages"; // Ensure the table name is set for schema handling
+        return queryInterface.bulkDelete(options, null, {}); // Pass the options object to bulkDelete for schema support
     },
 };
