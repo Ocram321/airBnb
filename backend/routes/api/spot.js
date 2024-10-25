@@ -121,7 +121,7 @@ router.post('/', requireAuth, validateSpot, async (req, res) => {
 
         res.status(201).json(newSpot);
     } catch (err) {
-        res.status(400).json({ message: 'Validation error', errors: err.errors });
+        res.status(400).json({ message: 'Validation error', errors: err });
     }
 });
 
