@@ -1,24 +1,26 @@
 const express = require("express");
 const { Review, Spot, User, ReviewImage } = require("../../db/models");
 const { requireAuth } = require("../../utils/auth.js");
-const { handleValidationErrors } = require('../../utils/validation');
-const { check } = require('express-validator');
+const { handleValidationErrors } = require("../../utils/validation");
+const { check } = require("express-validator");
+
 const router = express.Router();
 
 const validateReview = [
-    check('review')
-        .exists({ checkFalsy: true})
-        .withMessage('Review text is required'),
-    check('stars')
+    check("review")
         .exists({ checkFalsy: true })
-        .isInt({min: 1, max: 5})
-        .withMessage('Stars must be an integer from 1 to 5'),
-        handleValidationErrors]
-
-
+        .withMessage("Review text is required"),
+    check("stars")
+        .exists({ checkFalsy: true })
+        .isInt({ min: 1, max: 5 })
+        .withMessage("Stars must be an integer from 1 to 5"),
+    handleValidationErrors,
+];
 
 // 1. Get all Reviews of the Current User
-router.get("/reviews/current", requireAuth, async (req, res) => {
+//removed review from front of route
+//Server error
+router.get("/current", requireAuth, async (req, res) => {
     try {
         const reviews = await Review.findAll({
             where: { userId: req.user.id },
@@ -35,11 +37,13 @@ router.get("/reviews/current", requireAuth, async (req, res) => {
                         "lat",
                         "lng",
                         "name",
+                        "description",
                         "price",
                     ],
                 },
                 {
                     model: ReviewImage,
+                    as: "reviewImages",
                     attributes: ["id", "url"],
                 },
             ],
@@ -52,87 +56,96 @@ router.get("/reviews/current", requireAuth, async (req, res) => {
 });
 
 // 2. Get all Reviews by a Spot's id
-router.get("/spots/:spotId/reviews", async (req, res) => {
-    const { spotId } = req.params;
+// resource not found
+//MOVED THIS ROUTE TO SPOTS TO FIX ISSUE
+// router.get("/spots/:spotId/reviews", async (req, res) => {
+//     const { spotId } = req.params;
 
-    try {
-        const spot = await Spot.findByPk(spotId);
-        if (!spot) {
-            return res.status(404).json({ message: "Spot couldn't be found" });
-        }
+//     try {
+//         const spot = await Spot.findByPk(spotId);
+//         if (!spot) {
+//             return res.status(404).json({ message: "Spot couldn't be found" });
+//         }
 
-        const reviews = await Review.findAll({
-            where: { spotId },
-            include: [
-                {
-                    model: User,
-                    attributes: ["id", "firstName", "lastName"],
-                },
-                {
-                    model: ReviewImage,
-                    attributes: ["id", "url"],
-                },
-            ],
-        });
+//         const reviews = await Review.findAll({
+//             where: { spotId },
+//             include: [
+//                 {
+//                     model: User,
+//                     attributes: ["id", "firstName", "lastName"],
+//                 },
+//                 {
+//                     model: ReviewImage,
+//                     attributes: ["id", "url"],
+//                 },
+//             ],
+//         });
 
-        res.status(200).json({ Reviews: reviews });
-    } catch (err) {
-        res.status(500).json({ message: "Server error" });
-    }
-});
-
-
-
+//         res.status(200).json({ Reviews: reviews });
+//     } catch (err) {
+//         res.status(500).json({ message: "Server error" });
+//     }
+// });
 
 // 3. Create a Review for a Spot based on the Spot's id
-router.post("/spots/:spotId/reviews", requireAuth, validateReview, async (req, res) => {
-    const { spotId } = req.params;
-    const { review, stars } = req.body;
+//MOVED TO SPOTS ROUTES TO MAKE IT WORK
+// router.post(
+//     "/spots/:spotId/reviews",
+//     requireAuth,
+//     validateReview,
+//     async (req, res) => {
+//         const { spotId } = req.params;
+//         const { review, stars } = req.body;
 
-    try {
-        const spot = await Spot.findByPk(spotId);
-        if (!spot) {
-            return res.status(404).json({ message: "Spot couldn't be found" });
-        }
+//         try {
+//             const spot = await Spot.findByPk(spotId);
+//             if (!spot) {
+//                 return res
+//                     .status(404)
+//                     .json({ message: "Spot couldn't be found" });
+//             }
 
-        const existingReview = await Review.findOne({
-            where: {
-                userId: req.user.id,
-                spotId,
-            },
-        });
+//             const existingReview = await Review.findOne({
+//                 where: {
+//                     userId: req.user.id,
+//                     spotId,
+//                 },
+//             });
 
-        if (existingReview) {
-            return res
-                .status(500)
-                .json({ message: "User already has a review for this spot" });
-        }
+//             if (existingReview) {
+//                 return res.status(500).json({
+//                     message: "User already has a review for this spot",
+//                 });
+//             }
 
-        if (!review || !stars || stars < 1 || stars > 5) {
-            return res.status(400).json({
-                message: "Bad Request",
-                errors: {
-                    review: "Review text is required",
-                    stars: "Stars must be an integer from 1 to 5",
-                },
-            });
-        }
+//             if (!review || !stars || stars < 1 || stars > 5) {
+//                 return res.status(400).json({
+//                     message: "Bad Request",
+//                     errors: {
+//                         review: "Review text is required",
+//                         stars: "Stars must be an integer from 1 to 5",
+//                     },
+//                 });
+//             }
 
-        const newReview = await Review.create({
-            userId: req.user.id,
-            spotId,
-            review,
-            stars,
-        });
+//             const newReview = await Review.create({
+//                 userId: req.user.id,
+//                 spotId,
+//                 review,
+//                 stars,
+//             });
 
-        res.status(201).json(newReview);
-    } catch (err) {
-        res.status(500).json({ message: "Failed to create review" });
-    }
-});
+//             res.status(201).json(newReview);
+//         } catch (err) {
+//             res.status(500).json({ message: "Failed to create review" });
+//         }
+//     }
+// );
 
 // 4. Add an Image to a Review based on the Review's id
-router.post("/reviews/:reviewId/images", requireAuth, async (req, res) => {
+//I removed the first part of the route, reviews,
+//need to be able to create a review as the logged in user to test this
+router.post("/:reviewId/images", requireAuth, async (req, res) => {
     const { reviewId } = req.params;
     const { url } = req.body;
 
@@ -168,7 +181,8 @@ router.post("/reviews/:reviewId/images", requireAuth, async (req, res) => {
 });
 
 // 5. Edit a Review
-router.put("/reviews/:reviewId", requireAuth, async (req, res) => {
+//removed review from route as test
+router.put("/:reviewId", requireAuth, async (req, res) => {
     const { reviewId } = req.params;
     const { review, stars } = req.body;
 
@@ -205,7 +219,8 @@ router.put("/reviews/:reviewId", requireAuth, async (req, res) => {
 });
 
 // 6. Delete a Review
-router.delete("/reviews/:reviewId", requireAuth, async (req, res) => {
+//same test remove review from front of route
+router.delete("/:reviewId", requireAuth, async (req, res) => {
     const { reviewId } = req.params;
 
     try {
@@ -261,7 +276,7 @@ router.delete(
                 message: "Successfully deleted",
             });
         } catch (error) {
-            next(error); // Pass any errors to the error handler middleware
+            next(error);
         }
     }
 );
