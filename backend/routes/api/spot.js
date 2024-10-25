@@ -1,10 +1,19 @@
-const express = require('express');
-const { Spot, Review, User, ReviewImage } = require("../../db/models"); // Assuming models are in a folder named models
+const express = require("express");
+const {
+    Spot,
+    Review,
+    User,
+    ReviewImage,
+    SpotImage,
+} = require("../../db/models"); // Assuming models are in a folder named models
 const router = express.Router();
-const { handleValidationErrors } = require('../../utils/validation');
-const { check } = require('express-validator');
-const { setTokenCookie, requireAuth, restoreUser } = require('../../utils/auth')
-
+const { handleValidationErrors } = require("../../utils/validation");
+const { check } = require("express-validator");
+const {
+    setTokenCookie,
+    requireAuth,
+    restoreUser,
+} = require("../../utils/auth");
 
 const validateReview = [
     check("review")
@@ -18,45 +27,43 @@ const validateReview = [
 ];
 
 const validateSpot = [
-    check('address')
-        .exists({ checkFalsy: true})
-        .withMessage('Street address is required'),
-    check('city')
-        .exists({ checkFalsy: true})
-        .withMessage('City is required'),
-    check('state')
-        .exists({ checkFalsy: true})
-        .withMessage('State is required'),
-    check('country')
-        .exists({ checkFalsy: true})
-        .withMessage('Country is required'),
-    check('lat')
-        .exists({ checkFalsy: true})
-        .withMessage('Latitude must be within -90 and 90'),
-    check('lng')
-        .exists({ checkFalsy: true})
-        .withMessage('Longitude must be within -180 and 180'),
-    check('name')
-        .exists({ checkFalsy: true})
-        .withMessage('Name must be less than 50 characters'),
-    check('description')
-        .exists({ checkFalsy: true})
-        .withMessage('Description is required'),
-    check('price')
-        .exists({ checkFalsy: true})
-        .withMessage('Price per day must be a positive number'),
-    handleValidationErrors
+    check("address")
+        .exists({ checkFalsy: true })
+        .withMessage("Street address is required"),
+    check("city").exists({ checkFalsy: true }).withMessage("City is required"),
+    check("state")
+        .exists({ checkFalsy: true })
+        .withMessage("State is required"),
+    check("country")
+        .exists({ checkFalsy: true })
+        .withMessage("Country is required"),
+    check("lat")
+        .exists({ checkFalsy: true })
+        .withMessage("Latitude must be within -90 and 90"),
+    check("lng")
+        .exists({ checkFalsy: true })
+        .withMessage("Longitude must be within -180 and 180"),
+    check("name")
+        .exists({ checkFalsy: true })
+        .withMessage("Name must be less than 50 characters"),
+    check("description")
+        .exists({ checkFalsy: true })
+        .withMessage("Description is required"),
+    check("price")
+        .exists({ checkFalsy: true })
+        .withMessage("Price per day must be a positive number"),
+    handleValidationErrors,
 ];
 // Route: Get all Spots
 // Method: GET
 // Path: /api/spots
 // Description: Fetches all the spots from the database without authentication.
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
     try {
         const spots = await Spot.findAll();
         res.status(200).json({ Spots: spots });
     } catch (err) {
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: "Server error" });
     }
 });
 
@@ -64,7 +71,7 @@ router.get('/', async (req, res) => {
 // Method: GET
 // Path: /api/spots/current
 // Description: Fetches all spots created by the current authenticated user.
-router.get('/current', restoreUser, requireAuth, async (req, res) => {
+router.get("/current", restoreUser, requireAuth, async (req, res) => {
     // Placeholder for authentication middleware
     // Assume req.user contains the logged-in user
     const userId = req.user.id;
@@ -73,7 +80,7 @@ router.get('/current', restoreUser, requireAuth, async (req, res) => {
         const spots = await Spot.findAll({ where: { ownerId: userId } });
         res.status(200).json({ Spots: spots });
     } catch (err) {
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: "Server error" });
     }
 });
 
@@ -81,7 +88,7 @@ router.get('/current', restoreUser, requireAuth, async (req, res) => {
 // Method: GET
 // Path: /api/spots/:spotId
 // Description: Fetches the details of a specific spot by its ID.
-router.get('/:spotId', async (req, res) => {
+router.get("/:spotId", async (req, res) => {
     const { spotId } = req.params;
 
     try {
@@ -91,7 +98,7 @@ router.get('/:spotId', async (req, res) => {
         }
         res.status(200).json(spot);
     } catch (err) {
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: "Server error" });
     }
 });
 
@@ -99,11 +106,21 @@ router.get('/:spotId', async (req, res) => {
 // Method: POST
 // Path: /api/spots
 // Description: Creates a new spot and returns the created spot data.
-router.post('/', requireAuth, validateSpot, async (req, res) => {
+router.post("/", requireAuth, validateSpot, async (req, res) => {
     // Placeholder for authentication middleware
     // Assume req.user contains the logged-in user
     const userId = req.user.id;
-    const { address, city, state, country, lat, lng, name, description, price } = req.body;
+    const {
+        address,
+        city,
+        state,
+        country,
+        lat,
+        lng,
+        name,
+        description,
+        price,
+    } = req.body;
 
     try {
         const newSpot = await Spot.create({
@@ -121,7 +138,7 @@ router.post('/', requireAuth, validateSpot, async (req, res) => {
 
         res.status(201).json(newSpot);
     } catch (err) {
-        res.status(400).json({ message: 'Validation error', errors: err });
+        res.status(400).json({ message: "Validation error", errors: err });
     }
 });
 
@@ -129,9 +146,19 @@ router.post('/', requireAuth, validateSpot, async (req, res) => {
 // Method: PUT
 // Path: /api/spots/:spotId
 // Description: Updates a specific spot and returns the updated spot.
-router.put('/:spotId', async (req, res) => {
+router.put("/:spotId", async (req, res) => {
     const { spotId } = req.params;
-    const { address, city, state, country, lat, lng, name, description, price } = req.body;
+    const {
+        address,
+        city,
+        state,
+        country,
+        lat,
+        lng,
+        name,
+        description,
+        price,
+    } = req.body;
 
     try {
         const spot = await Spot.findByPk(spotId);
@@ -153,7 +180,10 @@ router.put('/:spotId', async (req, res) => {
 
         res.status(200).json(spot);
     } catch (err) {
-        res.status(400).json({ message: 'Validation error', errors: err.errors });
+        res.status(400).json({
+            message: "Validation error",
+            errors: err.errors,
+        });
     }
 });
 
@@ -161,7 +191,7 @@ router.put('/:spotId', async (req, res) => {
 // Method: DELETE
 // Path: /api/spots/:spotId
 // Description: Deletes a specific spot and returns a success message.
-router.delete('/:spotId', async (req, res) => {
+router.delete("/:spotId", async (req, res) => {
     const { spotId } = req.params;
 
     try {
@@ -171,16 +201,16 @@ router.delete('/:spotId', async (req, res) => {
         }
 
         await spot.destroy();
-        res.status(200).json({ message: 'Successfully deleted' });
+        res.status(200).json({ message: "Successfully deleted" });
     } catch (err) {
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: "Server error" });
     }
 });
 
 // Route: Add an Image to a Spot by id
 // Method: POST
 // Path: /api/spots/:spotId/images
-router.post('/:spotId/images', restoreUser, requireAuth, async (req, res) => {
+router.post("/:spotId/images", restoreUser, requireAuth, async (req, res) => {
     const { spotId } = req.params;
     const { url, preview } = req.body;
     try {
@@ -191,7 +221,7 @@ router.post('/:spotId/images', restoreUser, requireAuth, async (req, res) => {
         }
 
         if (spot.ownerId !== req.user.id) {
-            return res.status(403).json({ message: 'Forbidden' });
+            return res.status(403).json({ message: "Forbidden" });
         }
 
         const newSpotImage = await SpotImage.create({
@@ -202,7 +232,10 @@ router.post('/:spotId/images', restoreUser, requireAuth, async (req, res) => {
 
         res.status(201).json(newSpotImage);
     } catch (err) {
-        res.status(400).json({ message: 'Error adding image', errors: err.errors });
+        res.status(400).json({
+            message: "Error adding image",
+            errors: err.errors,
+        });
     }
 });
 
@@ -228,7 +261,7 @@ router.get("/:spotId/reviews", async (req, res) => {
                 },
                 {
                     model: ReviewImage,
-                    as: "reviewImages",  // Use the alias defined in the association
+                    as: "reviewImages", // Use the alias defined in the association
                     attributes: ["id", "url"],
                 },
             ],
@@ -240,10 +273,13 @@ router.get("/:spotId/reviews", async (req, res) => {
     }
 });
 
-
 // 3. Create a Review for a Spot based on the Spot's id
 // Collins route for Reviews
-router.post("/:spotId/reviews", requireAuth, validateReview, async (req, res) => {
+router.post(
+    "/:spotId/reviews",
+    requireAuth,
+    validateReview,
+    async (req, res) => {
         const { spotId } = req.params;
         const { review, stars } = req.body;
 
@@ -291,5 +327,75 @@ router.post("/:spotId/reviews", requireAuth, validateReview, async (req, res) =>
         }
     }
 );
+
+// Route: Add an Image to a Spot by id
+// Method: POST
+// Path: /api/spots/:spotId/images
+// Description: Adds a new image to a specific spot, only if the user is the owner of the spot.
+router.post("/:spotId/images", restoreUser, requireAuth, async (req, res) => {
+    const { spotId } = req.params;
+    const { url, preview } = req.body;
+    try {
+        // Fetch the spot to ensure it exists and belongs to the current user (authorization check)
+        const spot = await Spot.findByPk(spotId);
+
+        if (!spot) {
+            return res.status(404).json({ message: "Spot couldn't be found" });
+        }
+
+        // Placeholder for authorization check
+        // Assuming req.user.id is the logged-in user's ID
+        if (spot.ownerId !== req.user.id) {
+            return res.status(403).json({ message: "Forbidden" });
+        }
+
+        const newSpotImage = await SpotImage.create({
+            spotId,
+            url,
+            preview,
+        });
+
+        res.status(201).json(newSpotImage);
+    } catch (err) {
+        res.status(400).json({
+            message: "Error adding image",
+            errors: err.errors,
+        });
+    }
+});
+
+// Route: Delete a Spot Image
+// Method: DELETE
+// Path: /api/spot-images/:imageId
+// Description: Deletes a specific image of a spot. The user must be the owner of the spot.
+router.delete("/:imageId", restoreUser, requireAuth, async (req, res) => {
+    const { imageId } = req.params;
+
+    try {
+        // Find the spot image
+        const spotImage = await SpotImage.findByPk(imageId);
+
+        if (!spotImage) {
+            return res
+                .status(404)
+                .json({ message: "Spot Image couldn't be found" });
+        }
+
+        // Fetch the associated spot to check ownership
+        const spot = await Spot.findByPk(spotImage.spotId);
+
+        // Placeholder for authorization check
+        if (spot.ownerId !== req.user.id) {
+            return res.status(403).json({ message: "Forbidden" });
+        }
+
+        await spotImage.destroy();
+        res.status(200).json({ message: "Successfully deleted" });
+    } catch (err) {
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+module.exports = router;
 
 module.exports = router;
