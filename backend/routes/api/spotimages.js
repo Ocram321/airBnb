@@ -1,15 +1,14 @@
 const express = require('express');
 const { SpotImage, Spot } = require("../../db/models"); // Assuming models are in a folder named models
 const router = express.Router();
-
+const { setTokenCookie, requireAuth, restoreUser } = require('../../utils/auth')
 // Route: Add an Image to a Spot by id
 // Method: POST
 // Path: /api/spots/:spotId/images
 // Description: Adds a new image to a specific spot, only if the user is the owner of the spot.
-router.post('/:spotId/images', async (req, res) => {
+router.post('/:spotId/images', restoreUser, requireAuth, async (req, res) => {
     const { spotId } = req.params;
     const { url, preview } = req.body;
-
     try {
         // Fetch the spot to ensure it exists and belongs to the current user (authorization check)
         const spot = await Spot.findByPk(spotId);
@@ -40,7 +39,7 @@ router.post('/:spotId/images', async (req, res) => {
 // Method: DELETE
 // Path: /api/spot-images/:imageId
 // Description: Deletes a specific image of a spot. The user must be the owner of the spot.
-router.delete('/:imageId', async (req, res) => {
+router.delete('/:imageId', restoreUser, requireAuth, async (req, res) => {
     const { imageId } = req.params;
 
     try {

@@ -1,11 +1,21 @@
 const express = require('express');
-const { Spot } = require("../../db/models"); // Assuming models are in a folder named models
+const { Spot, Review, User, ReviewImage } = require("../../db/models"); // Assuming models are in a folder named models
 const router = express.Router();
 const { handleValidationErrors } = require('../../utils/validation');
 const { check } = require('express-validator');
 const { setTokenCookie, requireAuth, restoreUser } = require('../../utils/auth')
 
 
+const validateReview = [
+    check("review")
+        .exists({ checkFalsy: true })
+        .withMessage("Review text is required"),
+    check("stars")
+        .exists({ checkFalsy: true })
+        .isInt({ min: 1, max: 5 })
+        .withMessage("Stars must be an integer from 1 to 5"),
+    handleValidationErrors,
+];
 
 const validateSpot = [
     check('address')
@@ -166,5 +176,120 @@ router.delete('/:spotId', async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
+
+// Route: Add an Image to a Spot by id
+// Method: POST
+// Path: /api/spots/:spotId/images
+router.post('/:spotId/images', restoreUser, requireAuth, async (req, res) => {
+    const { spotId } = req.params;
+    const { url, preview } = req.body;
+    try {
+        const spot = await Spot.findByPk(spotId);
+
+        if (!spot) {
+            return res.status(404).json({ message: "Spot couldn't be found" });
+        }
+
+        if (spot.ownerId !== req.user.id) {
+            return res.status(403).json({ message: 'Forbidden' });
+        }
+
+        const newSpotImage = await SpotImage.create({
+            spotId,
+            url,
+            preview,
+        });
+
+        res.status(201).json(newSpotImage);
+    } catch (err) {
+        res.status(400).json({ message: 'Error adding image', errors: err.errors });
+    }
+});
+
+//  Get all Reviews by a Spot's id
+// Method : GET
+// Path: /api/spots/:spotId/reviews
+// Collins route for reviews
+router.get("/:spotId/reviews", async (req, res) => {
+    const { spotId } = req.params;
+
+    try {
+        const spot = await Spot.findByPk(spotId);
+        if (!spot) {
+            return res.status(404).json({ message: "Spot couldn't be found" });
+        }
+
+        const reviews = await Review.findAll({
+            where: { spotId },
+            include: [
+                {
+                    model: User,
+                    attributes: ["id", "firstName", "lastName"],
+                },
+                {
+                    model: ReviewImage,
+                    as: "reviewImages",  // Use the alias defined in the association
+                    attributes: ["id", "url"],
+                },
+            ],
+        });
+
+        res.status(200).json({ Reviews: reviews });
+    } catch (err) {
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+
+// 3. Create a Review for a Spot based on the Spot's id
+// Collins route for Reviews
+router.post("/:spotId/reviews", requireAuth, validateReview, async (req, res) => {
+        const { spotId } = req.params;
+        const { review, stars } = req.body;
+
+        try {
+            const spot = await Spot.findByPk(spotId);
+            if (!spot) {
+                return res
+                    .status(404)
+                    .json({ message: "Spot couldn't be found" });
+            }
+
+            const existingReview = await Review.findOne({
+                where: {
+                    userId: req.user.id,
+                    spotId,
+                },
+            });
+
+            if (existingReview) {
+                return res.status(500).json({
+                    message: "User already has a review for this spot",
+                });
+            }
+
+            if (!review || !stars || stars < 1 || stars > 5) {
+                return res.status(400).json({
+                    message: "Bad Request",
+                    errors: {
+                        review: "Review text is required",
+                        stars: "Stars must be an integer from 1 to 5",
+                    },
+                });
+            }
+
+            const newReview = await Review.create({
+                userId: req.user.id,
+                spotId,
+                review,
+                stars,
+            });
+
+            res.status(201).json(newReview);
+        } catch (err) {
+            res.status(500).json({ message: "Failed to create review" });
+        }
+    }
+);
 
 module.exports = router;
