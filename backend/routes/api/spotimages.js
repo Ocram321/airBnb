@@ -9,7 +9,6 @@ const { setTokenCookie, requireAuth, restoreUser } = require('../../utils/auth')
 router.post('/:spotId/images', restoreUser, requireAuth, async (req, res) => {
     const { spotId } = req.params;
     const { url, preview } = req.body;
-
     try {
         // Fetch the spot to ensure it exists and belongs to the current user (authorization check)
         const spot = await Spot.findByPk(spotId);
