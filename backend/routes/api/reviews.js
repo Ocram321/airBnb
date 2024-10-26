@@ -39,13 +39,15 @@ router.get("/current", requireAuth, async (req, res) => {
                         "name",
                         "price",
                     ],
-                },
-                {
-                    model: SpotImage,
-                    as: "SpotImages",
-                    attributes: ["url"],
-                    where: { preview: true },
-                    required: false,
+                    include: [
+                        {
+                            model: SpotImage,
+                            as: "SpotImages",
+                            attributes: ["url"],
+                            where: { preview: true },
+                            required: false,
+                        },
+                    ],
                 },
                 {
                     model: ReviewImage,
@@ -58,8 +60,24 @@ router.get("/current", requireAuth, async (req, res) => {
                 },
             ],
         });
+        const formattedReviews = reviews.map((review) => {
+            const spot = review.Spot;
+            let previewImage = null;
 
-        res.status(200).json({ Reviews: reviews });
+            if (spot && spot.SpotImages && spot.SpotImages.length > 0) {
+                previewImage = spot.SpotImages[0].url;
+            }
+
+            return {
+                ...review.toJSON(),
+                Spot: {
+                    ...spot.toJSON(),
+                    previewImage,
+                },
+            };
+        });
+
+        res.status(200).json({ Reviews: formattedReviews });
     } catch (err) {
         res.status(500).json({ message: "Server error" });
     }
