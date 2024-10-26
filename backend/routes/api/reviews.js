@@ -42,6 +42,10 @@ router.get("/current", requireAuth, async (req, res) => {
                     ],
                 },
                 {
+                    model: User,
+                    attributes: ["id", "firstName", "lastName"],
+                },
+                {
                     model: ReviewImage,
                     as: "ReviewImages",
                     attributes: ["id", "url"],
