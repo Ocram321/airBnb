@@ -37,8 +37,16 @@ router.get("/current", requireAuth, async (req, res) => {
                         "lat",
                         "lng",
                         "name",
-                        "description",
                         "price",
+                    ],
+                    include: [
+                        {
+                            model: SpotImage,
+                            as: "SpotImages",
+                            attributes: ["url"],
+                            where: { preview: true },
+                            required: false,
+                        },
                     ],
                 },
                 {
@@ -53,7 +61,7 @@ router.get("/current", requireAuth, async (req, res) => {
             ],
         });
 
-        res.status(200).json({ Reviews: reviews });
+        res.status(200).json(reviews);
     } catch (err) {
         res.status(500).json({ message: "Server error" });
     }
