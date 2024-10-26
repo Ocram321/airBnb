@@ -62,8 +62,23 @@ router.get("/current", requireAuth, async (req, res) => {
                 },
             ],
         });
+        // Manually format the response to include 'previewImage'
+        const formattedReviews = reviews.map((review) => {
+            const reviewData = review.toJSON(); // Convert Sequelize instance to plain JS object
+            const spot = reviewData.Spot;
 
-        res.status(200).json({ Reviews: reviews });
+            // If the spot has SpotImages, extract the first image URL as previewImage
+            if (spot && spot.SpotImages && spot.SpotImages.length > 0) {
+                spot.previewImage = spot.SpotImages[0].url;
+            } else {
+                spot.previewImage = null; // Fallback in case no image is found
+            }
+
+            delete spot.SpotImages; // Remove the SpotImages array after extracting previewImage
+            return reviewData;
+        });
+
+        res.status(200).json({ Reviews: formattedReviews });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Server error" });
