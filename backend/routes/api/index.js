@@ -4,7 +4,7 @@ const sessionRouter = require("./session.js");
 const usersRouter = require("./users.js");
 const reviewsRouter = require("./reviews.js");
 const spotsRouter = require("./spot.js");
-const spotImageRouter = require("./spotimages.js");
+// const spotImageRouter = require("./spotimages.js");
 
 const { restoreUser } = require("../../utils/auth.js");
 
