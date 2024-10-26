@@ -38,6 +38,16 @@ router.get("/current", requireAuth, async (req, res) => {
                         "lng",
                         "name",
                         "price",
+                        // Retrieve the preview image URL and alias it as 'previewImage'
+                        [Sequelize.col("SpotImages.url"), "previewImage"],
+                    ],
+                    include: [
+                        {
+                            model: SpotImage,
+                            attributes: [], // Don't return the whole SpotImages object, only use it for previewImage
+                            where: { preview: true }, // Assuming there's a preview flag
+                            required: false, // In case a spot doesn't have a preview image
+                        },
                     ],
                 },
                 {
@@ -50,11 +60,19 @@ router.get("/current", requireAuth, async (req, res) => {
                     attributes: ["id", "url"],
                 },
             ],
+            group: [
+                "Review.id",
+                "Spot.id",
+                "SpotImages.url",
+                "User.id",
+                "ReviewImages.id",
+            ],
         });
 
+        // Return the reviews with the properly structured Spot and ReviewImage data
         res.status(200).json({ Reviews: reviews });
     } catch (err) {
-        console.log(err);
+        console.error(err);
         res.status(500).json({ message: "Server error" });
     }
 });
