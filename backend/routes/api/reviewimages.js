@@ -1,18 +1,18 @@
 const express = require("express");
 const { Review, ReviewImage } = require("../../db/models");
-const { requireAuth, restoreUser } = require("../../utils/auth.js");
+const { requireAuth } = require("../../utils/auth.js");
 
 const router = express.Router();
 
 //Delete a Review Image
-router.delete("/:imageId", restoreUser, requireAuth, async (req, res, next) => {
+router.delete("/:imageId", requireAuth, async (req, res, next) => {
     const { imageId } = req.params;
 
     try {
         const reviewImage = await ReviewImage.findByPk(imageId, {
             include: {
                 model: Review,
-                as: "Reviews",
+                as: "Review",
                 attributes: ["userId"],
             },
         });
@@ -31,7 +31,7 @@ router.delete("/:imageId", restoreUser, requireAuth, async (req, res, next) => {
 
         await reviewImage.destroy();
 
-        return res.status(200).json({
+        res.status(200).json({
             message: "Successfully deleted",
         });
     } catch (error) {
