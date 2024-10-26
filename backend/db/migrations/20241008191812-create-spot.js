@@ -19,6 +19,8 @@ module.exports = {
                 },
                 ownerId: {
                     type: Sequelize.INTEGER,
+                    references: { model: "Users", key: "id" }, // Ensures ownerId links to Users table
+                    allowNull: false,
                 },
                 address: {
                     type: Sequelize.STRING,
@@ -37,24 +39,26 @@ module.exports = {
                     allowNull: false,
                 },
                 lat: {
-                    type: Sequelize.DECIMAL,
+                    type: Sequelize.FLOAT,
                     allowNull: false,
                 },
                 lng: {
-                    type: Sequelize.DECIMAL,
+                    type: Sequelize.FLOAT,
                     allowNull: false,
                 },
                 name: {
                     type: Sequelize.STRING,
                     allowNull: false,
+                    validate: { len: [0, 50] },
                 },
                 description: {
-                    type: Sequelize.STRING,
+                    type: Sequelize.TEXT,
                     allowNull: false,
                 },
                 price: {
                     type: Sequelize.DECIMAL,
                     allowNull: false,
+                    validate: { min: 0 },
                 },
                 createdAt: {
                     allowNull: false,

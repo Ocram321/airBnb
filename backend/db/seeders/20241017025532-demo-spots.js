@@ -8,21 +8,23 @@ if (process.env.NODE_ENV === "production") {
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        options.tableName = "Spots"
+        options.tableName = "Spots";
         await queryInterface.bulkInsert(
-         options,
+            options,
             [
                 {
                     ownerId: 1,
-                    address: "1  First St",
-                    city: "San Deigo",
+                    address: "1 First St",
+                    city: "San Diego",
                     state: "California",
                     country: "United States of America",
                     lat: 32.7495,
                     lng: -117.247,
-                    name: "SD Beach house",
+                    name: "SD Beach House",
                     description: "Wake up next to the beach.",
                     price: 150,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
                 },
                 {
                     ownerId: 2,
@@ -35,6 +37,8 @@ module.exports = {
                     name: "LA Apartment",
                     description: "Live like a star in Los Angeles.",
                     price: 300,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
                 },
                 {
                     ownerId: 3,
@@ -45,8 +49,10 @@ module.exports = {
                     lat: 40.7128,
                     lng: -74.006,
                     name: "The Big Apple",
-                    description: "Watch out I'm walking",
+                    description: "Watch out I'm walking here!",
                     price: 100,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
                 },
             ],
             { validate: true }
@@ -54,6 +60,7 @@ module.exports = {
     },
 
     async down(queryInterface, Sequelize) {
-        await queryInterface.bulkDelete (options, null, {});
+        options.tableName = "Spots"; //
+        await queryInterface.bulkDelete(options, null, {});
     },
 };

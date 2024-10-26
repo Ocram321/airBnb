@@ -5,15 +5,12 @@ const {
     User,
     ReviewImage,
     SpotImage,
+    Sequelize,
 } = require("../../db/models"); // Assuming models are in a folder named models
 const router = express.Router();
 const { handleValidationErrors } = require("../../utils/validation");
 const { check } = require("express-validator");
-const {
-    setTokenCookie,
-    requireAuth,
-    restoreUser,
-} = require("../../utils/auth");
+const { requireAuth, restoreUser,} = require("../../utils/auth");
 
 const validateReview = [
     check("review")
@@ -27,31 +24,15 @@ const validateReview = [
 ];
 
 const validateSpot = [
-    check("address")
-        .exists({ checkFalsy: true })
-        .withMessage("Street address is required"),
+    check("address").exists({ checkFalsy: true }).withMessage("Street address is required"),
     check("city").exists({ checkFalsy: true }).withMessage("City is required"),
-    check("state")
-        .exists({ checkFalsy: true })
-        .withMessage("State is required"),
-    check("country")
-        .exists({ checkFalsy: true })
-        .withMessage("Country is required"),
-    check("lat")
-        .exists({ checkFalsy: true })
-        .withMessage("Latitude must be within -90 and 90"),
-    check("lng")
-        .exists({ checkFalsy: true })
-        .withMessage("Longitude must be within -180 and 180"),
-    check("name")
-        .exists({ checkFalsy: true })
-        .withMessage("Name must be less than 50 characters"),
-    check("description")
-        .exists({ checkFalsy: true })
-        .withMessage("Description is required"),
-    check("price")
-        .exists({ checkFalsy: true })
-        .withMessage("Price per day must be a positive number"),
+    check("state").exists({ checkFalsy: true }).withMessage("State is required"),
+    check("country").exists({ checkFalsy: true }).withMessage("Country is required"),
+    check("lat").exists({ checkFalsy: true }).isFloat({ min: -90, max: 90 }).withMessage("Latitude must be within -90 and 90"),
+    check("lng").exists({ checkFalsy: true }).isFloat({ min: -180, max: 180 }).withMessage("Longitude must be within -180 and 180"),
+    check("name").exists({ checkFalsy: true }).isLength({ max: 50 }).withMessage("Name must be less than 50 characters"),
+    check("description").exists({ checkFalsy: true }).withMessage("Description is required"),
+    check("price").exists({ checkFalsy: true }).isFloat({ min: 0 }).withMessage("Price per day must be a positive number"),
     handleValidationErrors,
 ];
 // Route: Get all Spots
@@ -60,7 +41,29 @@ const validateSpot = [
 // Description: Fetches all the spots from the database without authentication.
 router.get("/", async (req, res) => {
     try {
-        const spots = await Spot.findAll();
+        const spots = await Spot.findAll({
+            include: [
+                {
+                    model: Review,
+                    attributes: [],
+                },
+                {
+                    model: SpotImage,
+                    attributes: ["url"],
+                    where: { preview: true }, // Only include preview images
+                    required: false, // Allow spots with no preview image
+                },
+            ],
+            attributes: {
+                include: [
+                    // Aggregated avgRating and previewImage for each spot
+                    [Sequelize.fn("AVG", Sequelize.col("Reviews.stars")), "avgRating"],
+                    [Sequelize.col("SpotImages.url"), "previewImage"]
+                ],
+            },
+            group: ["Spot.id", "SpotImages.id"],
+        });
+
         res.status(200).json({ Spots: spots });
     } catch (err) {
         res.status(500).json({ message: "Server error" });
@@ -77,8 +80,54 @@ router.get("/current", restoreUser, requireAuth, async (req, res) => {
     const userId = req.user.id;
 
     try {
-        const spots = await Spot.findAll({ where: { ownerId: userId } });
-        res.status(200).json({ Spots: spots });
+        const spots = await Spot.findAll({
+            where: { ownerId: userId },
+            include: [
+                {
+                    model: Review,
+                    attributes: [],
+                },
+                {
+                    model: SpotImage,
+                    attributes: ["url"],
+                    where: { preview: true }, // Only includes the images that are marked as preview
+                    required: false, // Allow the spots with no preview image
+                },
+            ],
+            attributes: {
+                include: [
+                    // Calculate the avgRating for each spot from associated reviews
+                    [Sequelize.fn("AVG", Sequelize.col("Reviews.stars")), "avgRating"],
+                    // Include previewImage from SpotImages
+                    [Sequelize.col("SpotImages.url"), "previewImage"]
+                ],
+            },
+            group: ["Spot.id", "SpotImages.id"], // Group by Spot and SpotImage for the aggregation
+        });
+
+
+        const formattedSpots = spots.map((spot) => {
+            const spotData = spot.toJSON();
+            return {
+                id: spotData.id,
+                ownerId: spotData.ownerId,
+                address: spotData.address,
+                city: spotData.city,
+                state: spotData.state,
+                country: spotData.country,
+                lat: spotData.lat,
+                lng: spotData.lng,
+                name: spotData.name,
+                description: spotData.description,
+                price: spotData.price,
+                createdAt: spotData.createdAt,
+                updatedAt: spotData.updatedAt,
+                avgRating: spotData.avgRating || null,
+                previewImage: spotData.previewImage || null,
+            };
+        });
+
+        res.status(200).json({ Spots: formattedSpots });
     } catch (err) {
         res.status(500).json({ message: "Server error" });
     }
@@ -92,10 +141,50 @@ router.get("/:spotId", async (req, res) => {
     const { spotId } = req.params;
 
     try {
-        const spot = await Spot.findByPk(spotId);
+        const spot = await Spot.findByPk(spotId, {
+            include: [
+                {
+                    model: Review,
+                    attributes: [
+                        // Calculate numReviews and avgStarRating from reviews
+                        [Sequelize.fn("COUNT", Sequelize.col("Reviews.id")), "numReviews"],
+                        [Sequelize.fn("AVG", Sequelize.col("Reviews.stars")), "avgStarRating"]
+                    ],
+                },
+                {
+                    model: SpotImage,
+                    as: "SpotImages",
+                    attributes: ["id", "url", "preview"], // Include image details
+                },
+                {
+                    model: User,
+                    as: "Owner",
+                    attributes: ["id", "firstName", "lastName"],
+                },
+            ],
+            attributes: [
+                "id",
+                "ownerId",
+                "address",
+                "city",
+                "state",
+                "country",
+                "lat",
+                "lng",
+                "name",
+                "description",
+                "price",
+                "createdAt",
+                "updatedAt",
+            ],
+            group: ["Spot.id", "SpotImages.id", "Owner.id"], // Group by Spot, SpotImage, and Owner for aggregation
+        });
+
         if (!spot) {
             return res.status(404).json({ message: "Spot couldn't be found" });
         }
+
+        // Send the response in the expected format
         res.status(200).json(spot);
     } catch (err) {
         res.status(500).json({ message: "Server error" });
@@ -261,7 +350,7 @@ router.get("/:spotId/reviews", async (req, res) => {
                 },
                 {
                     model: ReviewImage,
-                    as: "reviewImages", // Use the alias defined in the association
+                    as: "ReviewImages", // Use the alias defined in the association
                     attributes: ["id", "url"],
                 },
             ],

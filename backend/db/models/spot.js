@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
             Spot.belongsTo(models.User, {
                 foreignKey: "ownerId",
+                as: "Owner",
             });
             Spot.hasMany(models.Review, {
                 foreignKey: "spotId",
@@ -19,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
             });
             Spot.hasMany(models.SpotImage, {
                 foreignKey: "spotId",
-                as: "spotImages",
+                as: "SpotImages",
                 onDelete: "CASCADE",
             });
             Spot.hasMany(models.Booking, {
@@ -49,16 +50,17 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
             },
             lat: {
-                type: DataTypes.NUMERIC,
+                type: DataTypes.FLOAT,
                 allowNull: false,
             },
             lng: {
-                type: DataTypes.NUMERIC,
+                type: DataTypes.FLOAT,
                 allowNull: false,
             },
-            name:{
+            name: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                validate: { len: [0, 50] },
             },
             description: {
                 type: DataTypes.STRING,
