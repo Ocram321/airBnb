@@ -1,11 +1,11 @@
 const express = require("express");
 const { Review, ReviewImage } = require("../../db/models");
-const { requireAuth } = require("../../utils/auth.js");
+const { requireAuth, restoreUser } = require("../../utils/auth.js");
 
 const router = express.Router();
 
 //Delete a Review Image
-router.delete("/:imageId", requireAuth, async (req, res, next) => {
+router.delete("/:imageId", restoreUser, requireAuth, async (req, res, next) => {
     const { imageId } = req.params;
 
     try {
@@ -31,7 +31,7 @@ router.delete("/:imageId", requireAuth, async (req, res, next) => {
 
         await reviewImage.destroy();
 
-        res.status(200).json({
+        return res.status(200).json({
             message: "Successfully deleted",
         });
     } catch (error) {
