@@ -44,9 +44,10 @@ router.get("/current", requireAuth, async (req, res) => {
                     include: [
                         {
                             model: SpotImage,
-                            attributes: [], // Don't return the SpotImage object, just use its URL
-                            where: { preview: true }, // Fetch only the preview image
-                            required: false, // In case no preview image exists
+                            as: "SpotImages", // Correctly use the alias from the association
+                            attributes: ["url"],
+                            where: { preview: true }, // Assuming the preview image is marked with a 'preview' flag
+                            required: false, // In case no preview image exists for a spot
                         },
                     ],
                 },
