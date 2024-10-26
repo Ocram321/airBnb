@@ -53,10 +53,12 @@ router.get("/", async (req, res) => {
             include: [
                 {
                     model: Review,
+                    as: "Reviews",
                     attributes: [], // Exclude other fields from Review; we only need avgRating
                 },
                 {
                     model: SpotImage,
+                    as: "SpotImages",
                     attributes: [], // Exclude other fields from SpotImage; we only need previewImage
                     where: { preview: true },
                     required: false, // Allow spots without preview images
@@ -89,6 +91,7 @@ router.get("/", async (req, res) => {
 
         res.status(200).json({ Spots: formattedSpots });
     } catch (err) {
+        console.log(err);
         res.status(500).json({ message: "Server error" });
     }
 });
@@ -102,50 +105,50 @@ router.get("/current", restoreUser, requireAuth, async (req, res) => {
     try {
         const spots = await Spot.findAll({
             where: { ownerId: userId },
-            include: [
-                {
-                    model: Review,
-                    attributes: [], // We only need to calculate avgRating from the Review model
-                },
-                {
-                    model: SpotImage,
-                    attributes: [], // We only need the preview image URL
-                    where: { preview: true }, // Only include images marked as preview
-                    required: false, // Allow spots without a preview image
-                },
-            ],
             attributes: {
                 include: [
-                    // Calculate avgRating based on associated reviews' stars
+                    // Calculate avgRating from associated reviews
                     [Sequelize.fn("AVG", Sequelize.col("Reviews.stars")), "avgRating"],
-                    // Retrieve the preview image URL
+                    // Select the preview image URL
                     [Sequelize.col("SpotImages.url"), "previewImage"]
                 ],
             },
-            group: ["Spot.id", "SpotImages.id"], // Group by Spot and SpotImage for correct aggregation
+            include: [
+                {
+                    model: Review,
+                    as: "Reviews",
+                    attributes: ["stars"], // Only need avgRating, exclude other review fields
+                },
+                {
+                    model: SpotImage,
+                    as: "SpotImages",
+                    attributes: [], // Only need preview image URL
+                    where: { preview: true }, // Only include preview images
+                    required: false, // Allow spots without a preview image
+                },
+            ],
+            group: ["Spot.id", "SpotImages.id"], // Group by Spot and SpotImage
+
         });
 
-        // Format the spots to match the expected response structure
-        const formattedSpots = spots.map((spot) => {
-            const spotData = spot.toJSON();
-            return {
-                id: spotData.id,
-                ownerId: spotData.ownerId,
-                address: spotData.address,
-                city: spotData.city,
-                state: spotData.state,
-                country: spotData.country,
-                lat: parseFloat(spotData.lat), // Ensure lat and lng are numbers
-                lng: parseFloat(spotData.lng),
-                name: spotData.name,
-                description: spotData.description,
-                price: parseFloat(spotData.price), // Ensure price is a number
-                createdAt: spotData.createdAt.toISOString(), // Convert dates to string format
-                updatedAt: spotData.updatedAt.toISOString(),
-                avgRating: spotData.avgRating ? parseFloat(spotData.avgRating.toFixed(1)) : null,
-                previewImage: spotData.previewImage || null,
-            };
-        });
+        // Format spots to match API spec and ensure correct data types
+        const formattedSpots = spots.map((spot) => ({
+            id: spot.id,
+            ownerId: spot.ownerId,
+            address: spot.address,
+            city: spot.city,
+            state: spot.state,
+            country: spot.country,
+            lat: parseFloat(spot.lat),
+            lng: parseFloat(spot.lng),
+            name: spot.name,
+            description: spot.description,
+            price: parseFloat(spot.price),
+            createdAt: new Date(spot.createdAt).toISOString(),
+            updatedAt: new Date(spot.updatedAt).toISOString(),
+            avgRating: spot.avgRating ? parseFloat(spot.avgRating.toFixed(1)) : null,
+            previewImage: spot.previewImage || null,
+        }));
 
         res.status(200).json({ Spots: formattedSpots });
     } catch (err) {
@@ -165,6 +168,7 @@ router.get("/:spotId", async (req, res) => {
             include: [
                 {
                     model: Review,
+                    as: "Reviews",
                     attributes: [
                         // Calculate numReviews and avgStarRating from reviews
                         [Sequelize.fn("COUNT", Sequelize.col("Reviews.id")), "numReviews"],
@@ -265,7 +269,9 @@ router.post("/", requireAuth, validateSpot, async (req, res) => {
 // Method: PUT
 // Path: /api/spots/:spotId
 // Description: Updates a specific spot and returns the updated spot.
-router.put("/:spotId", restoreUser, requireAuth, validateSpot , async (req, res) => {
+const { validationResult } = require("express-validator");
+
+router.put("/:spotId", restoreUser, requireAuth, validateSpot, async (req, res) => {
     const { spotId } = req.params;
     const {
         address,
@@ -279,19 +285,20 @@ router.put("/:spotId", restoreUser, requireAuth, validateSpot , async (req, res)
         price,
     } = req.body;
 
+    // Handle validation errors from validateSpot middleware
     const validationErrors = validationResult(req);
     if (!validationErrors.isEmpty()) {
         const errors = validationErrors.array().reduce((acc, err) => {
             acc[err.param] = err.msg;
             return acc;
         }, {});
-        return res.status(400).json({ message: "Validation error", errors });
+        return res.status(400).json({ message: "Bad Request", errors });
     }
 
     try {
         const spot = await Spot.findByPk(spotId);
 
-        // Check if the spot exists
+        // 404 Error: Spot not found
         if (!spot) {
             return res.status(404).json({ message: "Spot couldn't be found" });
         }
@@ -301,7 +308,7 @@ router.put("/:spotId", restoreUser, requireAuth, validateSpot , async (req, res)
             return res.status(403).json({ message: "Forbidden" });
         }
 
-        // Update the spot
+        // Update the spot with validated data
         await spot.update({
             address,
             city,
@@ -314,7 +321,7 @@ router.put("/:spotId", restoreUser, requireAuth, validateSpot , async (req, res)
             price,
         });
 
-        // Send the updated spot as a response
+        // Format and send the updated spot as a response
         res.status(200).json({
             id: spot.id,
             ownerId: spot.ownerId,
@@ -331,14 +338,10 @@ router.put("/:spotId", restoreUser, requireAuth, validateSpot , async (req, res)
             updatedAt: spot.updatedAt.toISOString(),
         });
     } catch (err) {
-        // Send 400 for any other validation-related errors
-        res.status(400).json({
-            message: "Validation error",
-            errors: err.errors ? err.errors.map((e) => ({ [e.path]: e.message })) : [],
-        });
+        console.error("Error updating spot:", err);
+        res.status(500).json({ message: "Server error" });
     }
 });
-
 // Route: Delete a Spot
 // Method: DELETE
 // Path: /api/spots/:spotId
