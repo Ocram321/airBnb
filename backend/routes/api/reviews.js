@@ -43,8 +43,12 @@ router.get("/current", requireAuth, async (req, res) => {
                 },
                 {
                     model: ReviewImage,
-                    as: "reviewImages",
+                    as: "ReviewImages",
                     attributes: ["id", "url"],
+                },
+                {
+                    model: User,
+                    attributes: ["id", "firstName", "lastName"],
                 },
             ],
         });
@@ -253,6 +257,7 @@ router.delete(
             const reviewImage = await ReviewImage.findByPk(imageId, {
                 include: {
                     model: Review,
+                    as: "Review",
                     attributes: ["userId"],
                 },
             });
