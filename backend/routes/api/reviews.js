@@ -65,12 +65,6 @@ router.get("/current", requireAuth, async (req, res) => {
     }
 });
 
-        res.status(200).json(reviews);
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ message: "Server error" });
-    }
-});
 
 // 2. Get all Reviews by a Spot's id
 // resource not found
