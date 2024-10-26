@@ -22,6 +22,7 @@ const validateReview = [
 //Server error
 router.get("/current", requireAuth, async (req, res) => {
     try {
+        // Fetch all reviews for the current user along with the required associations
         const reviews = await Review.findAll({
             where: { userId: req.user.id },
             include: [
@@ -39,6 +40,13 @@ router.get("/current", requireAuth, async (req, res) => {
                         "name",
                         "price",
                     ],
+                    include: [
+                        {
+                            model: SpotImage,
+                            as: "SpotImages",
+                            attributes: ["url", "preview"], // Include 'preview' to manually filter later
+                        },
+                    ],
                 },
                 {
                     model: User,
@@ -52,9 +60,26 @@ router.get("/current", requireAuth, async (req, res) => {
             ],
         });
 
-        res.status(200).json({ Reviews: reviews });
+        // Process the reviews to manually add the previewImage from SpotImages
+        const formattedReviews = reviews.map((review) => {
+            const reviewData = review.toJSON(); // Convert to plain JS object for manipulation
+            const spot = reviewData.Spot;
+
+            // Find the first image where 'preview' is true, or set to null if none exist
+            if (spot && spot.SpotImages) {
+                const previewImage =
+                    spot.SpotImages.find((image) => image.preview) || null;
+                spot.previewImage = previewImage ? previewImage.url : null; // Rename 'url' to 'previewImage'
+            }
+
+            delete spot.SpotImages; // Remove SpotImages after extracting previewImage
+            return reviewData;
+        });
+
+        // Return the formatted reviews with the expected structure
+        res.status(200).json({ Reviews: formattedReviews });
     } catch (err) {
-        console.log(err);
+        console.error(err);
         res.status(500).json({ message: "Server error" });
     }
 });
