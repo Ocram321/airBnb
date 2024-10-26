@@ -37,47 +37,19 @@ router.get("/current", requireAuth, async (req, res) => {
                         "lat",
                         "lng",
                         "name",
+                        "description",
                         "price",
-                    ],
-                    include: [
-                        {
-                            model: SpotImage,
-                            as: "SpotImages",
-                            attributes: ["url"],
-                            where: { preview: true },
-                            required: false,
-                        },
                     ],
                 },
                 {
                     model: ReviewImage,
-                    as: "ReviewImages",
+                    as: "reviewImages",
                     attributes: ["id", "url"],
-                },
-                {
-                    model: User,
-                    attributes: ["id", "firstName", "lastName"],
                 },
             ],
         });
-        const formattedReviews = reviews.map((review) => {
-            const spot = review.Spot;
-            let previewImage = null;
 
-            if (spot && spot.SpotImages && spot.SpotImages.length > 0) {
-                previewImage = spot.SpotImages[0].url;
-            }
-
-            return {
-                ...review.toJSON(),
-                Spot: {
-                    ...spot.toJSON(),
-                    previewImage,
-                },
-            };
-        });
-
-        res.status(200).json({ Reviews: formattedReviews });
+        res.status(200).json({ Reviews: reviews });
     } catch (err) {
         res.status(500).json({ message: "Server error" });
     }
@@ -281,7 +253,6 @@ router.delete(
             const reviewImage = await ReviewImage.findByPk(imageId, {
                 include: {
                     model: Review,
-                    as: "Review",
                     attributes: ["userId"],
                 },
             });
