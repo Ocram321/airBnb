@@ -43,7 +43,7 @@ router.get("/current", requireAuth, async (req, res) => {
                 },
                 {
                     model: ReviewImage,
-                    as: "reviewImages",
+                    as: "ReviewImages",
                     attributes: ["id", "url"],
                 },
             ],
@@ -51,6 +51,7 @@ router.get("/current", requireAuth, async (req, res) => {
 
         res.status(200).json({ Reviews: reviews });
     } catch (err) {
+        console.log(err);
         res.status(500).json({ message: "Server error" });
     }
 });
