@@ -52,8 +52,6 @@ router.get("/current", requireAuth, async (req, res) => {
             ],
         });
 
-        res.status(200).json({ Reviews: reviewsWithPreviewImage });
-
         res.status(200).json({ Reviews: reviews });
     } catch (err) {
         console.log(err);
