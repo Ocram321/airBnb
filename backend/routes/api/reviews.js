@@ -39,15 +39,13 @@ router.get("/current", requireAuth, async (req, res) => {
                         "name",
                         "price",
                     ],
-                    include: [
-                        {
-                            model: SpotImage,
-                            as: "SpotImages",
-                            attributes: ["url"],
-                            where: { preview: true },
-                            required: false,
-                        },
-                    ],
+                },
+                {
+                    model: SpotImage,
+                    as: "SpotImages",
+                    attributes: ["url"],
+                    where: { preview: true },
+                    required: false,
                 },
                 {
                     model: ReviewImage,
@@ -61,7 +59,7 @@ router.get("/current", requireAuth, async (req, res) => {
             ],
         });
 
-        res.status(200).json(reviews);
+        res.status(200).json({ Reviews: reviews });
     } catch (err) {
         res.status(500).json({ message: "Server error" });
     }
