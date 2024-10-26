@@ -38,6 +38,16 @@ router.get("/current", requireAuth, async (req, res) => {
                         "lng",
                         "name",
                         "price",
+                        // Get the previewImage from SpotImages
+                        [Sequelize.col("SpotImages.url"), "previewImage"],
+                    ],
+                    include: [
+                        {
+                            model: SpotImage,
+                            attributes: [], // Don't return the SpotImage object, just use its URL
+                            where: { preview: true }, // Fetch only the preview image
+                            required: false, // In case no preview image exists
+                        },
                     ],
                 },
                 {
@@ -54,7 +64,7 @@ router.get("/current", requireAuth, async (req, res) => {
 
         res.status(200).json({ Reviews: reviews });
     } catch (err) {
-        console.log(err);
+        console.error(err);
         res.status(500).json({ message: "Server error" });
     }
 });
