@@ -2,7 +2,7 @@
 
 let options = {};
 if (process.env.NODE_ENV === "production") {
-    options.schema = process.env.SCHEMA; // define your schema in options object
+    options.schema = process.env.SCHEMA; // Define schema in options object if in production
 }
 
 /** @type {import('sequelize-cli').Migration} */
@@ -25,7 +25,7 @@ module.exports = {
                     url: "www.randompicture3.com",
                 },
             ],
-            options
+            { validate: true } // Enable validation
         );
     },
 

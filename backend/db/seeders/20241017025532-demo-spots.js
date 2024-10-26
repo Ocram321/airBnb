@@ -49,7 +49,7 @@ module.exports = {
                     price: 100,
                 },
             ],
-            {}
+            { validate: true }
         );
     },
 

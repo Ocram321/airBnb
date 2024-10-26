@@ -1,9 +1,8 @@
 "use strict";
 
-const { options } = require('../../routes/api/spotimages');
 let options = {};
 if (process.env.NODE_ENV === "production") {
-    options.schema = process.env.SCHEMA; // Define your schema in options object
+    options.schema = process.env.SCHEMA; // Define schema in options object if in production
 }
 
 /** @type {import('sequelize-cli').Migration} */
@@ -21,7 +20,7 @@ module.exports = {
                 {
                     spotId: 1,
                     url: "https://randompicture.com/image2.jpg",
-                    preview: true,
+                    preview: false,
                 },
                 {
                     spotId: 2,
@@ -29,12 +28,12 @@ module.exports = {
                     preview: true,
                 },
             ],
-            {}
+            { validate: true } // Enable validation for data integrity
         );
     },
 
     down: async (queryInterface, Sequelize) => {
-        options.tableName = "SpotImages"; // Ensure the table name is set for schema handling
-        return queryInterface.bulkDelete(options, null, {}); // Pass the options object to bulkDelete for schema support
+        options.tableName = "SpotImages";
+        return queryInterface.bulkDelete(options, null, {}); // Use options to support schema if in production
     },
 };

@@ -1,12 +1,15 @@
+"use strict";
+
 let options = {};
 if (process.env.NODE_ENV === "production") {
-    options.schema = process.env.SCHEMA; // define your schema in options object
+    options.schema = process.env.SCHEMA; // Define schema in options object if in production
 }
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-    options.tableName = "Reviews";
+        options.tableName = "Reviews";
+
         await queryInterface.bulkInsert(
             options,
             [
@@ -29,7 +32,7 @@ module.exports = {
                     stars: 3,
                 },
             ],
-            options
+            { validate: true } // Enable validation
         );
     },
 
