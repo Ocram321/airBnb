@@ -1,17 +1,19 @@
 "use strict";
 
-const { User } = require("../models");
 const bcrypt = require("bcryptjs");
 
 let options = {};
 if (process.env.NODE_ENV === "production") {
-    options.schema = process.env.SCHEMA; // define your schema in options object
+    options.schema = process.env.SCHEMA;
 }
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await User.bulkCreate(
+        options.tableName = "Users";
+
+        await queryInterface.bulkInsert(
+            options,
             [
                 {
                     email: "demo@user.io",
@@ -19,6 +21,8 @@ module.exports = {
                     firstName: "Marco",
                     lastName: "Milinovich",
                     hashedPassword: bcrypt.hashSync("password"),
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
                 },
                 {
                     email: "user1@user.io",
@@ -26,6 +30,8 @@ module.exports = {
                     firstName: "Marco",
                     lastName: "Milinovich",
                     hashedPassword: bcrypt.hashSync("password2"),
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
                 },
                 {
                     email: "user2@user.io",
@@ -33,14 +39,17 @@ module.exports = {
                     firstName: "Marco",
                     lastName: "Milinovich",
                     hashedPassword: bcrypt.hashSync("password3"),
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
                 },
             ],
-            { validate: true }
+            {}
         );
     },
 
     async down(queryInterface, Sequelize) {
         options.tableName = "Users";
+
         const Op = Sequelize.Op;
         return queryInterface.bulkDelete(
             options,
