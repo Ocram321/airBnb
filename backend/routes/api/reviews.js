@@ -60,20 +60,6 @@ router.get("/current", requireAuth, async (req, res) => {
             ],
         });
 
-        const reviewsWithPreviewImage = reviews.map((review) => {
-            const reviewData = review.toJSON();
-            const spot = reviewData.Spot;
-
-            if (spot && spot.SpotImages && spot.SpotImages.length > 0) {
-                spot.previewImage = spot.SpotImages[0].url;
-            } else {
-                spot.previewImage = null;
-            }
-
-            delete spot.SpotImages;
-            return reviewData;
-        });
-
         res.status(200).json({ Reviews: reviewsWithPreviewImage });
 
         res.status(200).json({ Reviews: reviews });
