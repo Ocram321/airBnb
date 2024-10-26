@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const { Sequelize } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
     class Spot extends Model {
         /**
@@ -74,6 +75,20 @@ module.exports = (sequelize, DataTypes) => {
         {
             sequelize,
             modelName: "Spot",
+            scopes: {
+                addPreview: {
+                    attributes: {
+                        include: [
+                            Sequelize.literal(`(SELECT "url"
+                                FROM "SpotImages" AS image
+                                WHERE
+                                    image.preview = true
+                                LIMIT 1)`),
+                            "previewImage",
+                        ],
+                    },
+                },
+            },
         }
     );
     return Spot;

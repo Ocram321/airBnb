@@ -4,11 +4,14 @@ const {
     Spot,
     User,
     ReviewImage,
+    SpotImage,
     Sequelize,
 } = require("../../db/models");
 const { requireAuth } = require("../../utils/auth.js");
 const { handleValidationErrors } = require("../../utils/validation");
 const { check } = require("express-validator");
+const spotimage = require("../../db/models/spotimage.js");
+const { Op } = require("sequelize");
 
 const router = express.Router();
 
@@ -33,25 +36,15 @@ router.get("/current", requireAuth, async (req, res) => {
             include: [
                 {
                     model: Spot,
-                    attributes: [
-                        "id",
-                        "ownerId",
-                        "address",
-                        "city",
-                        "state",
-                        "country",
-                        "lat",
-                        "lng",
-                        "name",
-                        "price",
-                    ],
-                    include: [
-                        [
-                            Sequelize.literal(`(SELECT "url" FROM "SpotImages" as image
+                    attributes: {
+                        include: [
+                            [
+                                Sequelize.literal(`(SELECT "url" FROM "SpotImages" as image
                         WHERE image.preview = true LIMIT 1)`),
-                            "previewImage",
+                                "previewImage",
+                            ],
                         ],
-                    ],
+                    },
                 },
                 {
                     model: User,
