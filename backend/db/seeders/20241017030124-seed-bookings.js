@@ -34,22 +34,7 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
-      {
-        spotId: 4,
-        userId: 4,
-        startDate: new Date('2024-09-05'),
-        endDate: new Date('2024-09-10'),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        spotId: 5,
-        userId: 5,
-        startDate: new Date('2024-08-01'),
-        endDate: new Date('2024-08-05'),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
+      
     ], options); // Passing options here to support schema if in production
   },
 
