@@ -58,6 +58,13 @@ router.get("/current", requireAuth, async (req, res) => {
             ],
         });
 
+        res.status(200).json({ Reviews: reviews });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
         res.status(200).json(reviews);
     } catch (err) {
         console.log(err);
