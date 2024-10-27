@@ -10,7 +10,7 @@ const {
 const router = express.Router();
 const { handleValidationErrors } = require("../../utils/validation");
 const { check } = require("express-validator");
-const { requireAuth, restoreUser,} = require("../../utils/auth");
+const { requireAuth, restoreUser } = require("../../utils/auth");
 
 const validateReview = [
     check("review")
@@ -24,15 +24,35 @@ const validateReview = [
 ];
 
 const validateSpot = [
-    check("address").exists({ checkFalsy: true }).withMessage("Street address is required"),
+    check("address")
+        .exists({ checkFalsy: true })
+        .withMessage("Street address is required"),
     check("city").exists({ checkFalsy: true }).withMessage("City is required"),
-    check("state").exists({ checkFalsy: true }).withMessage("State is required"),
-    check("country").exists({ checkFalsy: true }).withMessage("Country is required"),
-    check("lat").exists({ checkFalsy: true }).isFloat({ min: -90, max: 90 }).withMessage("Latitude must be within -90 and 90"),
-    check("lng").exists({ checkFalsy: true }).isFloat({ min: -180, max: 180 }).withMessage("Longitude must be within -180 and 180"),
-    check("name").exists({ checkFalsy: true }).isLength({ max: 50 }).withMessage("Name must be less than 50 characters"),
-    check("description").exists({ checkFalsy: true }).withMessage("Description is required"),
-    check("price").exists({ checkFalsy: true }).isFloat({ min: 0 }).withMessage("Price per day must be a positive number"),
+    check("state")
+        .exists({ checkFalsy: true })
+        .withMessage("State is required"),
+    check("country")
+        .exists({ checkFalsy: true })
+        .withMessage("Country is required"),
+    check("lat")
+        .exists({ checkFalsy: true })
+        .isFloat({ min: -90, max: 90 })
+        .withMessage("Latitude must be within -90 and 90"),
+    check("lng")
+        .exists({ checkFalsy: true })
+        .isFloat({ min: -180, max: 180 })
+        .withMessage("Longitude must be within -180 and 180"),
+    check("name")
+        .exists({ checkFalsy: true })
+        .isLength({ max: 50 })
+        .withMessage("Name must be less than 50 characters"),
+    check("description")
+        .exists({ checkFalsy: true })
+        .withMessage("Description is required"),
+    check("price")
+        .exists({ checkFalsy: true })
+        .isFloat({ min: 0 })
+        .withMessage("Price per day must be a positive number"),
     handleValidationErrors,
 ];
 // Route: Get all Spots
@@ -42,70 +62,35 @@ const validateSpot = [
 router.get("/", async (req, res) => {
     try {
         const spots = await Spot.findAll({
+            attributes: {
+                include: [
+                    // Calculate avgRating based on associated reviews' stars
+                    [
+                        Sequelize.fn("AVG", Sequelize.col("Reviews.stars")),
+                        "avgRating",
+                    ],
+                    // Get preview image URL if it exists in SpotImages
+                    [Sequelize.col("SpotImages.url"), "previewImage"],
+                ],
+            },
             include: [
                 {
                     model: Review,
-                    attributes: [],
+                    as: "Reviews",
+                    attributes: [], // Exclude other fields from Review; we only need avgRating
                 },
                 {
                     model: SpotImage,
-                    attributes: ["url"],
-                    where: { preview: true }, // Only include preview images
-                    required: false, // Allow spots with no preview image
+                    as: "SpotImages",
+                    attributes: [], // Exclude other fields from SpotImage; we only need previewImage
+                    where: { preview: true },
+                    required: false, // Allow spots without preview images
                 },
             ],
-            attributes: {
-                include: [
-                    // Aggregated avgRating and previewImage for each spot
-                    [Sequelize.fn("AVG", Sequelize.col("Reviews.stars")), "avgRating"],
-                    [Sequelize.col("SpotImages.url"), "previewImage"]
-                ],
-            },
-            group: ["Spot.id", "SpotImages.id"],
+            group: ["Spot.id", "SpotImages.id"], // Group by Spot and SpotImage for aggregation
         });
 
-        res.status(200).json({ Spots: spots });
-    } catch (err) {
-        res.status(500).json({ message: "Server error" });
-    }
-});
-
-// Route: Get all Spgots owned by the Current User
-// Method: GET
-// Path: /api/spots/current
-// Description: Fetches all spots created by the current authenticated user.
-router.get("/current", restoreUser, requireAuth, async (req, res) => {
-    // Placeholder for authentication middleware
-    // Assume req.user contains the logged-in user
-    const userId = req.user.id;
-
-    try {
-        const spots = await Spot.findAll({
-            where: { ownerId: userId },
-            include: [
-                {
-                    model: Review,
-                    attributes: [],
-                },
-                {
-                    model: SpotImage,
-                    attributes: ["url"],
-                    where: { preview: true }, // Only includes the images that are marked as preview
-                    required: false, // Allow the spots with no preview image
-                },
-            ],
-            attributes: {
-                include: [
-                    // Calculate the avgRating for each spot from associated reviews
-                    [Sequelize.fn("AVG", Sequelize.col("Reviews.stars")), "avgRating"],
-                    // Include previewImage from SpotImages
-                    [Sequelize.col("SpotImages.url"), "previewImage"]
-                ],
-            },
-            group: ["Spot.id", "SpotImages.id"], // Group by Spot and SpotImage for the aggregation
-        });
-
-
+        // Format the spots to match the expected response structure
         const formattedSpots = spots.map((spot) => {
             const spotData = spot.toJSON();
             return {
@@ -115,17 +100,84 @@ router.get("/current", restoreUser, requireAuth, async (req, res) => {
                 city: spotData.city,
                 state: spotData.state,
                 country: spotData.country,
-                lat: spotData.lat,
-                lng: spotData.lng,
+                lat: parseFloat(spotData.lat), // Ensure lat and lng are numbers
+                lng: parseFloat(spotData.lng),
                 name: spotData.name,
                 description: spotData.description,
-                price: spotData.price,
-                createdAt: spotData.createdAt,
-                updatedAt: spotData.updatedAt,
-                avgRating: spotData.avgRating || null,
+                price: parseFloat(spotData.price), // Ensure price is a number
+                createdAt: spotData.createdAt.toISOString(), // Convert date to string format
+                updatedAt: spotData.updatedAt.toISOString(),
+                avgRating: spotData.avgRating
+                    ? parseFloat(spotData.avgRating.toFixed(1))
+                    : null,
                 previewImage: spotData.previewImage || null,
             };
         });
+
+        res.status(200).json({ Spots: formattedSpots });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+// Route: Get all Spgots owned by the Current User
+// Method: GET
+// Path: /api/spots/current
+// Description: Fetches all spots created by the current authenticated user.
+router.get("/current", restoreUser, requireAuth, async (req, res) => {
+    const userId = req.user.id;
+
+    try {
+        const spots = await Spot.findAll({
+            where: { ownerId: userId },
+            attributes: {
+                include: [
+                    // Calculate avgRating from associated reviews
+                    [
+                        Sequelize.fn("AVG", Sequelize.col("Reviews.stars")),
+                        "avgRating",
+                    ],
+                    // Select the preview image URL
+                    [Sequelize.col("SpotImages.url"), "previewImage"],
+                ],
+            },
+            include: [
+                {
+                    model: Review,
+                    as: "Reviews",
+                    attributes: ["stars"], // Only need avgRating, exclude other review fields
+                },
+                {
+                    model: SpotImage,
+                    as: "SpotImages",
+                    attributes: [], // Only need preview image URL
+                    where: { preview: true }, // Only include preview images
+                    required: false, // Allow spots without a preview image
+                },
+            ],
+            group: ["Spot.id", "SpotImages.id"], // Group by Spot and SpotImage
+        });
+
+        // Format spots to match API spec and ensure correct data types
+        const formattedSpots = spots.map((spot) => ({
+            id: spot.id,
+            ownerId: spot.ownerId,
+            address: spot.address,
+            city: spot.city,
+            state: spot.state,
+            country: spot.country,
+            lat: parseFloat(spot.lat),
+            lng: parseFloat(spot.lng),
+            name: spot.name,
+            description: spot.description,
+            price: parseFloat(spot.price),
+            createdAt: new Date(spot.createdAt).toISOString(),
+            updatedAt: new Date(spot.updatedAt).toISOString(),
+            avgRating: spot.avgRating
+                ? parseFloat(spot.avgRating.toFixed(1))
+                : null,
+            previewImage: spot.previewImage || null,
+        }));
 
         res.status(200).json({ Spots: formattedSpots });
     } catch (err) {
@@ -145,21 +197,28 @@ router.get("/:spotId", async (req, res) => {
             include: [
                 {
                     model: Review,
+                    as: "Reviews",
                     attributes: [
                         // Calculate numReviews and avgStarRating from reviews
-                        [Sequelize.fn("COUNT", Sequelize.col("Reviews.id")), "numReviews"],
-                        [Sequelize.fn("AVG", Sequelize.col("Reviews.stars")), "avgStarRating"]
+                        [
+                            Sequelize.fn("COUNT", Sequelize.col("Reviews.id")),
+                            "numReviews",
+                        ],
+                        [
+                            Sequelize.fn("AVG", Sequelize.col("Reviews.stars")),
+                            "avgStarRating",
+                        ],
                     ],
                 },
                 {
                     model: SpotImage,
-                    as: "SpotImages",
+                    as: "SpotImages", // Use the alias defined in the Spot model
                     attributes: ["id", "url", "preview"], // Include image details
                 },
                 {
                     model: User,
-                    as: "Owner",
-                    attributes: ["id", "firstName", "lastName"],
+                    as: "Owner", // Use the alias defined in the Spot model
+                    attributes: ["id", "firstName", "lastName"], // Include only necessary fields
                 },
             ],
             attributes: [
@@ -184,8 +243,20 @@ router.get("/:spotId", async (req, res) => {
             return res.status(404).json({ message: "Spot couldn't be found" });
         }
 
-        // Send the response in the expected format
-        res.status(200).json(spot);
+        const spotData = spot.toJSON();
+
+        // Format the response to match expected structure
+        const formattedSpot = {
+            ...spotData,
+            avgStarRating: spotData.avgStarRating
+                ? parseFloat(spotData.avgStarRating.toFixed(1))
+                : null,
+            numReviews: parseInt(spotData.numReviews, 10) || 0,
+            SpotImages: spotData.SpotImages || [],
+            Owner: spotData.Owner || null,
+        };
+
+        res.status(200).json(formattedSpot);
     } catch (err) {
         res.status(500).json({ message: "Server error" });
     }
@@ -235,27 +306,16 @@ router.post("/", requireAuth, validateSpot, async (req, res) => {
 // Method: PUT
 // Path: /api/spots/:spotId
 // Description: Updates a specific spot and returns the updated spot.
-router.put("/:spotId", async (req, res) => {
-    const { spotId } = req.params;
-    const {
-        address,
-        city,
-        state,
-        country,
-        lat,
-        lng,
-        name,
-        description,
-        price,
-    } = req.body;
+const { validationResult } = require("express-validator");
 
-    try {
-        const spot = await Spot.findByPk(spotId);
-        if (!spot) {
-            return res.status(404).json({ message: "Spot couldn't be found" });
-        }
-
-        spot.update({
+router.put(
+    "/:spotId",
+    restoreUser,
+    requireAuth,
+    validateSpot,
+    async (req, res) => {
+        const { spotId } = req.params;
+        const {
             address,
             city,
             state,
@@ -265,28 +325,83 @@ router.put("/:spotId", async (req, res) => {
             name,
             description,
             price,
-        });
+        } = req.body;
 
-        res.status(200).json(spot);
-    } catch (err) {
-        res.status(400).json({
-            message: "Validation error",
-            errors: err.errors,
-        });
+        // Handle validation errors from validateSpot middleware
+        const validationErrors = validationResult(req);
+        if (!validationErrors.isEmpty()) {
+            const errors = validationErrors.array().reduce((acc, err) => {
+                acc[err.param] = err.msg;
+                return acc;
+            }, {});
+            return res.status(400).json({ message: "Bad Request", errors });
+        }
+
+        try {
+            const spot = await Spot.findByPk(spotId);
+
+            // 404 Error: Spot not found
+            if (!spot) {
+                return res
+                    .status(404)
+                    .json({ message: "Spot couldn't be found" });
+            }
+
+            // Authorization: Check if the current user owns the spot
+            if (spot.ownerId !== req.user.id) {
+                return res.status(403).json({ message: "Forbidden" });
+            }
+
+            // Update the spot with validated data
+            await spot.update({
+                address,
+                city,
+                state,
+                country,
+                lat,
+                lng,
+                name,
+                description,
+                price,
+            });
+
+            // Format and send the updated spot as a response
+            res.status(200).json({
+                id: spot.id,
+                ownerId: spot.ownerId,
+                address: spot.address,
+                city: spot.city,
+                state: spot.state,
+                country: spot.country,
+                lat: parseFloat(spot.lat),
+                lng: parseFloat(spot.lng),
+                name: spot.name,
+                description: spot.description,
+                price: parseFloat(spot.price),
+                createdAt: spot.createdAt.toISOString(),
+                updatedAt: spot.updatedAt.toISOString(),
+            });
+        } catch (err) {
+            console.error("Error updating spot:", err);
+            res.status(500).json({ message: "Server error" });
+        }
     }
-});
-
+);
 // Route: Delete a Spot
 // Method: DELETE
 // Path: /api/spots/:spotId
 // Description: Deletes a specific spot and returns a success message.
-router.delete("/:spotId", async (req, res) => {
+router.delete("/:spotId", restoreUser, requireAuth, async (req, res) => {
     const { spotId } = req.params;
 
     try {
         const spot = await Spot.findByPk(spotId);
+
         if (!spot) {
             return res.status(404).json({ message: "Spot couldn't be found" });
+        }
+        if (spot.ownerId !== req.user.id) {
+            return res.status(403).json({ message: "Forbidden" });
         }
 
         await spot.destroy();
