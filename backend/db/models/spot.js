@@ -88,6 +88,17 @@ module.exports = (sequelize, DataTypes) => {
                         ],
                     },
                 },
+                // addAvStar: {
+                //     attributes: {
+                //         include: [
+                //             Sequelize.literal(`(SELECT "stars"
+                //                 FROM "Reviews"
+                //                 WHERE
+                //                     ""Reviews"."spotId" = "Spot"."id")`),
+                //             "avgRating",
+                //         ],
+                //     },
+                // },
             },
         }
     );

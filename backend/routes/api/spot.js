@@ -7,6 +7,7 @@ const {
     SpotImage,
     Sequelize,
 } = require("../../db/models"); // Assuming models are in a folder named models
+
 const router = express.Router();
 const { handleValidationErrors } = require("../../utils/validation");
 const { check } = require("express-validator");
@@ -135,9 +136,9 @@ router.get("/", async (req, res) => {
                 include: [
                     [
                         Sequelize.literal(`(
-                            SELECT AVG(stars)
-                            FROM Reviews
-                            WHERE Reviews.spotId = Spot.id
+                            SELECT ROUND(AVG("stars"))
+                            FROM "Reviews"
+                            WHERE "Reviews"."spotId" = "Spot"."id"
                         )`),
                         "avgRating",
                     ],
@@ -152,15 +153,15 @@ router.get("/", async (req, res) => {
                     ],
                 ],
             },
-            include: [
-                {
-                    model: SpotImage,
-                    as: "SpotImages",
-                    attributes: [],
-                    where: { preview: true },
-                    required: false,
-                },
-            ],
+            // include: [
+            //     {
+            //         model: SpotImage,
+            //         as: "SpotImages",
+            //         attributes: [],
+            //         where: { preview: true },
+            //         required: false,
+            //     },
+            // ],
         });
 
         const formattedSpots = spots.map((spot) => {
@@ -185,13 +186,19 @@ router.get("/", async (req, res) => {
                 previewImage: spotData.previewImage || null,
             };
         });
-
+        console.log(
+            "====================================================Seems to be working"
+        );
+        console.log(errors);
         res.status(200).json({
             Spots: formattedSpots,
             page: pageInt,
             size: sizeInt,
         });
     } catch (err) {
+        console.log(
+            "============================================================NOT WORKING"
+        );
         console.error("Error retrieving spots:", err);
         res.status(500).json({ message: "Server error" });
     }
