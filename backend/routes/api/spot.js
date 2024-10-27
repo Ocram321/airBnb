@@ -72,8 +72,8 @@ router.get("/", async (req, res) => {
             maxPrice
         } = req.query;
 
-        const pageInt = parseInt(page);
-        const sizeInt = parseInt(size);
+        const pageInt = parseInt(page) || 1;
+        const sizeInt = parseInt(size) || 20;
 
         const errors = {};
         if (pageInt < 1) errors.page = "Page must be greater than or equal to 1";
@@ -152,9 +152,7 @@ router.get("/", async (req, res) => {
                 price: parseFloat(spotData.price),
                 createdAt: spotData.createdAt.toISOString(),
                 updatedAt: spotData.updatedAt.toISOString(),
-                avgRating: spotData.avgRating
-                    ? parseFloat(spotData.avgRating.toFixed(1))
-                    : null,
+                avgRating: spotData.avgRating ? parseFloat(spotData.avgRating.toFixed(1)) : null,
                 previewImage: spotData.previewImage || null,
             };
         });
