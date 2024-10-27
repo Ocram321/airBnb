@@ -61,44 +61,81 @@ const validateSpot = [
 // Description: Fetches all the spots from the database without authentication.
 router.get("/", async (req, res) => {
     try {
+        const {
+            page = 1,
+            size = 20,
+            minLat,
+            maxLat,
+            minLng,
+            maxLng,
+            minPrice,
+            maxPrice
+        } = req.query;
+
+        const pageInt = parseInt(page);
+        const sizeInt = parseInt(size);
+
+        const errors = {};
+        if (pageInt < 1) errors.page = "Page must be greater than or equal to 1";
+        if (sizeInt < 1 || sizeInt > 20) errors.size = "Size must be between 1 and 20";
+        if (minLat && isNaN(parseFloat(minLat))) errors.minLat = "Minimum latitude is invalid";
+        if (maxLat && isNaN(parseFloat(maxLat))) errors.maxLat = "Maximum latitude is invalid";
+        if (minLng && isNaN(parseFloat(minLng))) errors.minLng = "Minimum longitude is invalid";
+        if (maxLng && isNaN(parseFloat(maxLng))) errors.maxLng = "Maximum longitude is invalid";
+        if (minPrice && (isNaN(parseFloat(minPrice)) || minPrice < 0)) errors.minPrice = "Minimum price must be greater than or equal to 0";
+        if (maxPrice && (isNaN(parseFloat(maxPrice)) || maxPrice < 0)) errors.maxPrice = "Maximum price must be greater than or equal to 0";
+
+        if (Object.keys(errors).length > 0) {
+            return res.status(400).json({
+                message: "Bad Request",
+                errors
+            });
+        }
+
+        const whereConditions = {};
+        if (minLat) whereConditions.lat = { [Sequelize.Op.gte]: parseFloat(minLat) };
+        if (maxLat) whereConditions.lat = { ...whereConditions.lat, [Sequelize.Op.lte]: parseFloat(maxLat) };
+        if (minLng) whereConditions.lng = { [Sequelize.Op.gte]: parseFloat(minLng) };
+        if (maxLng) whereConditions.lng = { ...whereConditions.lng, [Sequelize.Op.lte]: parseFloat(maxLng) };
+        if (minPrice) whereConditions.price = { [Sequelize.Op.gte]: parseFloat(minPrice) };
+        if (maxPrice) whereConditions.price = { ...whereConditions.price, [Sequelize.Op.lte]: parseFloat(maxPrice) };
+
         const spots = await Spot.findAll({
+            where: whereConditions,
+            limit: sizeInt,
+            offset: (pageInt - 1) * sizeInt,
             attributes: {
                 include: [
-                    // Calculate avgRating based on associated reviews' stars
-                    [
-                        Sequelize.fn("AVG", Sequelize.col("Reviews.stars")),
-                        "avgRating",
-                    ],
-                    // Get preview image URL if it exists in SpotImages
                     [
                         Sequelize.literal(`(
-                        SELECT "url"
-                        FROM "SpotImages" AS image
-                        WHERE image."spotId" = Spot.id AND image.preview = true
-                        LIMIT 1
-                    )`),
+                            SELECT AVG(stars)
+                            FROM Reviews
+                            WHERE Reviews.spotId = Spot.id
+                        )`),
+                        "avgRating",
+                    ],
+                    [
+                        Sequelize.literal(`(
+                            SELECT "url"
+                            FROM "SpotImages" AS image
+                            WHERE image."spotId" = Spot.id AND image.preview = true
+                            LIMIT 1
+                        )`),
                         "previewImage",
                     ],
                 ],
             },
             include: [
                 {
-                    model: Review,
-                    as: "Reviews",
-                    attributes: [], // Exclude other fields from Review; we only need avgRating
-                },
-                {
                     model: SpotImage,
                     as: "SpotImages",
-                    attributes: [], // Exclude other fields from SpotImage; we only need previewImage
+                    attributes: [],
                     where: { preview: true },
-                    required: false, // Allow spots without preview images
+                    required: false,
                 },
             ],
-            group: ["Spot.id"], // Group by Spot and SpotImage for aggregation
         });
 
-        // Format the spots to match the expected response structure
         const formattedSpots = spots.map((spot) => {
             const spotData = spot.toJSON();
             return {
@@ -108,12 +145,12 @@ router.get("/", async (req, res) => {
                 city: spotData.city,
                 state: spotData.state,
                 country: spotData.country,
-                lat: parseFloat(spotData.lat), // Ensure lat and lng are numbers
+                lat: parseFloat(spotData.lat),
                 lng: parseFloat(spotData.lng),
                 name: spotData.name,
                 description: spotData.description,
-                price: parseFloat(spotData.price), // Ensure price is a number
-                createdAt: spotData.createdAt.toISOString(), // Convert date to string format
+                price: parseFloat(spotData.price),
+                createdAt: spotData.createdAt.toISOString(),
                 updatedAt: spotData.updatedAt.toISOString(),
                 avgRating: spotData.avgRating
                     ? parseFloat(spotData.avgRating.toFixed(1))
@@ -122,9 +159,9 @@ router.get("/", async (req, res) => {
             };
         });
 
-        res.status(200).json({ Spots: formattedSpots });
+        res.status(200).json({ Spots: formattedSpots, page: pageInt, size: sizeInt });
     } catch (err) {
-        console.log(err);
+        console.error("Error retrieving spots:", err);
         res.status(500).json({ message: "Server error" });
     }
 });
@@ -184,7 +221,7 @@ router.get("/current", restoreUser, requireAuth, async (req, res) => {
             avgRating: spot.avgRating
                 ? parseFloat(spot.avgRating.toFixed(1))
                 : null,
-            previewImage: spot.previewImage || null,
+            previewImage: spot.previewImage //|| null,
         }));
 
         res.status(200).json({ Spots: formattedSpots });
