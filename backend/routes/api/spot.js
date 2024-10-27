@@ -70,7 +70,15 @@ router.get("/", async (req, res) => {
                         "avgRating",
                     ],
                     // Get preview image URL if it exists in SpotImages
-                    [Sequelize.col("SpotImages.url"), "previewImage"],
+                    [
+                        Sequelize.literal(`(
+                        SELECT "url"
+                        FROM "SpotImages" AS image
+                        WHERE image."spotId" = Spot.id AND image.preview = true
+                        LIMIT 1
+                    )`),
+                        "previewImage",
+                    ],
                 ],
             },
             include: [
