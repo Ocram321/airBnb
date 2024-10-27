@@ -71,19 +71,17 @@ router.get("/", async (req, res) => {
             minPrice,
             maxPrice
         } = req.query;
-        console.log('this is still working 1:')
+        
 
         const pageInt = parseInt(page) ;
         const sizeInt = parseInt(size);
 
-        console.log('this is still working 2:')
+      
         const errors = {};
         if (pageInt < 1) errors.page = "Page must be greater than or equal to 1";
         if (sizeInt < 1 || sizeInt > 20) errors.size = "Size must be between 1 and 20";
         if (minLat && isNaN(parseFloat(minLat))) errors.minLat = "Minimum latitude is invalid";
         if (maxLat && isNaN(parseFloat(maxLat))) errors.maxLat = "Maximum latitude is invalid";
-
-        console.log('this is still working 3:')
         if (minLng && isNaN(parseFloat(minLng))) errors.minLng = "Minimum longitude is invalid";
         if (maxLng && isNaN(parseFloat(maxLng))) errors.maxLng = "Maximum longitude is invalid";
         if (minPrice && (isNaN(parseFloat(minPrice)) || minPrice < 0)) errors.minPrice = "Minimum price must be greater than or equal to 0";
