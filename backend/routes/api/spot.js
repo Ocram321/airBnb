@@ -127,16 +127,16 @@ router.get("/", async (req, res) => {
                     [
                         Sequelize.literal(`(
                             SELECT AVG(stars)
-                            FROM Reviews
-                            WHERE Reviews.spotId = Spot.id
+                            FROM "Reviews"
+                            WHERE "Reviews"."spotId" = "Spot"."id"
                         )`),
                         "avgRating",
                     ],
                     [
                         Sequelize.literal(`(
                             SELECT "url"
-                            FROM "SpotImages" AS image
-                            WHERE image."spotId" = Spot.id AND image.preview = true
+                            FROM "SpotImages" AS "Image"
+                            WHERE "Image"."spotId" = "Spot"."id" AND "Image"."preview" = true
                             LIMIT 1
                         )`),
                         "previewImage",
@@ -211,8 +211,8 @@ router.get("/current", restoreUser, requireAuth, async (req, res) => {
                     [
                         Sequelize.literal(`(
                             SELECT "url"
-                            FROM "SpotImages" AS image
-                            WHERE image."spotId" = Spot.id AND image.preview = true
+                            FROM "SpotImages" AS "Image"
+                            WHERE "Image"."spotId" = "Spot"."id" AND "Image"."preview" = true
                             LIMIT 1
                         )`),
                         "previewImage",
@@ -233,7 +233,7 @@ router.get("/current", restoreUser, requireAuth, async (req, res) => {
                     required: false, // Allow spots without a preview image
                 },
             ],
-            group: ["Spot.id", "SpotImages.id"], // Group by Spot and SpotImage
+            group: ["Spot.id", "SpotImages.id", "Reviews.id"], // Group by Spot and SpotImage
         });
 
         // Format spots to match API spec and ensure correct data types
@@ -318,7 +318,7 @@ router.get("/:spotId", async (req, res) => {
                 "createdAt",
                 "updatedAt",
             ],
-            group: ["Spot.id", "SpotImages.id", "Owner.id"], // Group by Spot, SpotImage, and Owner for aggregation
+            group: ["Spot.id", "SpotImages.id", "Owner.id", "Reviews.id"], // Group by Spot, SpotImage, and Owner for aggregation
         });
 
         if (!spot) {
@@ -340,6 +340,7 @@ router.get("/:spotId", async (req, res) => {
 
         res.status(200).json(formattedSpot);
     } catch (err) {
+        console.error(err);
         res.status(500).json({ message: "Server error" });
     }
 });
