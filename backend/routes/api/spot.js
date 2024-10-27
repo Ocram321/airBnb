@@ -59,6 +59,7 @@ const validateSpot = [
 // Method: GET
 // Path: /api/spots
 // Description: Fetches all the spots from the database without authentication.
+//testing if this one route works for Collin
 router.get("/", async (req, res) => {
     try {
         const spots = await Spot.findAll({
