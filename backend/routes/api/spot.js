@@ -133,35 +133,35 @@ router.get("/", async (req, res) => {
             limit: sizeInt,
             offset: (pageInt - 1) * sizeInt,
             attributes: {
-                include: [
-                    [
-                        Sequelize.literal(`(
-                            SELECT AVG(stars)
-                            FROM Reviews
-                            WHERE Reviews.spotId = Spot.id
-                        )`),
-                        "avgRating",
-                    ],
-                    [
-                        Sequelize.literal(`(
-                            SELECT "url"
-                            FROM "SpotImages" AS image
-                            WHERE image."spotId" = Spot.id AND image.preview = true
-                            LIMIT 1
-                        )`),
-                        "previewImage",
-                    ],
-                ],
+                // include: [
+                //     [
+                //         Sequelize.literal(`(
+                //             SELECT AVG(stars)
+                //             FROM Reviews
+                //             WHERE Reviews.spotId = Spot.id
+                //         )`),
+                //         "avgRating",
+                //     ],
+                //     [
+                //         Sequelize.literal(`(
+                //             SELECT "url"
+                //             FROM "SpotImages" AS image
+                //             WHERE image."spotId" = Spot.id AND image.preview = true
+                //             LIMIT 1
+                //         )`),
+                //         "previewImage",
+                //     ],
+                // ],
             },
-            include: [
-                {
-                    model: SpotImage,
-                    as: "SpotImages",
-                    attributes: [],
-                    where: { preview: true },
-                    required: false,
-                },
-            ],
+            // include: [
+            //     {
+            //         model: SpotImage,
+            //         as: "SpotImages",
+            //         attributes: [],
+            //         where: { preview: true },
+            //         required: false,
+            //     },
+            // ],
         });
 
         const formattedSpots = spots.map((spot) => {
@@ -180,12 +180,12 @@ router.get("/", async (req, res) => {
                 price: parseFloat(spotData.price),
                 createdAt: spotData.createdAt.toISOString(),
                 updatedAt: spotData.updatedAt.toISOString(),
-                avgRating:
-                    spotData.avgRating !== null &&
-                    spotData.avgRating !== undefined
-                        ? Number(spotData.avgRating.toFixed(1))
-                        : null,
-                previewImage: spotData.previewImage || null,
+                // avgRating:
+                //     spotData.avgRating !== null &&
+                //     spotData.avgRating !== undefined
+                //         ? Number(spotData.avgRating.toFixed(1))
+                //         : null,
+                // previewImage: spotData.previewImage || null,
             };
         });
 
