@@ -180,9 +180,11 @@ router.get("/", async (req, res) => {
                 price: parseFloat(spotData.price),
                 createdAt: spotData.createdAt.toISOString(),
                 updatedAt: spotData.updatedAt.toISOString(),
-                avgRating: spotData.avgRating
-                    ? parseFloat(spotData.avgRating.toFixed(1))
-                    : null,
+                avgRating:
+                    spotData.avgRating !== null &&
+                    spotData.avgRating !== undefined
+                        ? Number(spotData.avgRating.toFixed(1))
+                        : null,
                 previewImage: spotData.previewImage || null,
             };
         });
