@@ -87,7 +87,7 @@ router.get("/", async (req, res) => {
                     required: false, // Allow spots without preview images
                 },
             ],
-            group: ["Spot.id", "SpotImages.id"], // Group by Spot and SpotImage for aggregation
+            group: ["Spot.id"], // Group by Spot and SpotImage for aggregation
         });
 
         // Format the spots to match the expected response structure
