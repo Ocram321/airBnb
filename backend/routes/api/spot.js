@@ -72,8 +72,8 @@ router.get("/", async (req, res) => {
             maxPrice
         } = req.query;
 
-        const pageInt = parseInt(page) || 1;
-        const sizeInt = parseInt(size) || 20;
+        const pageInt = parseInt(page) ;
+        const sizeInt = parseInt(size);
 
         const errors = {};
         if (pageInt < 1) errors.page = "Page must be greater than or equal to 1";
