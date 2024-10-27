@@ -7,6 +7,7 @@ const {
     SpotImage,
     Sequelize,
 } = require("../../db/models"); // Assuming models are in a folder named models
+
 const router = express.Router();
 const { handleValidationErrors } = require("../../utils/validation");
 const { check } = require("express-validator");
@@ -69,38 +70,63 @@ router.get("/", async (req, res) => {
             minLng,
             maxLng,
             minPrice,
-            maxPrice
+            maxPrice,
         } = req.query;
-        
 
-        const pageInt = parseInt(page) ;
+        const pageInt = parseInt(page);
         const sizeInt = parseInt(size);
 
-      
         const errors = {};
-        if (pageInt < 1) errors.page = "Page must be greater than or equal to 1";
-        if (sizeInt < 1 || sizeInt > 20) errors.size = "Size must be between 1 and 20";
-        if (minLat && isNaN(parseFloat(minLat))) errors.minLat = "Minimum latitude is invalid";
-        if (maxLat && isNaN(parseFloat(maxLat))) errors.maxLat = "Maximum latitude is invalid";
-        if (minLng && isNaN(parseFloat(minLng))) errors.minLng = "Minimum longitude is invalid";
-        if (maxLng && isNaN(parseFloat(maxLng))) errors.maxLng = "Maximum longitude is invalid";
-        if (minPrice && (isNaN(parseFloat(minPrice)) || minPrice < 0)) errors.minPrice = "Minimum price must be greater than or equal to 0";
-        if (maxPrice && (isNaN(parseFloat(maxPrice)) || maxPrice < 0)) errors.maxPrice = "Maximum price must be greater than or equal to 0";
+        if (pageInt < 1)
+            errors.page = "Page must be greater than or equal to 1";
+        if (sizeInt < 1 || sizeInt > 20)
+            errors.size = "Size must be between 1 and 20";
+        if (minLat && isNaN(parseFloat(minLat)))
+            errors.minLat = "Minimum latitude is invalid";
+        if (maxLat && isNaN(parseFloat(maxLat)))
+            errors.maxLat = "Maximum latitude is invalid";
+        if (minLng && isNaN(parseFloat(minLng)))
+            errors.minLng = "Minimum longitude is invalid";
+        if (maxLng && isNaN(parseFloat(maxLng)))
+            errors.maxLng = "Maximum longitude is invalid";
+        if (minPrice && (isNaN(parseFloat(minPrice)) || minPrice < 0))
+            errors.minPrice =
+                "Minimum price must be greater than or equal to 0";
+        if (maxPrice && (isNaN(parseFloat(maxPrice)) || maxPrice < 0))
+            errors.maxPrice =
+                "Maximum price must be greater than or equal to 0";
 
         if (Object.keys(errors).length > 0) {
             return res.status(400).json({
                 message: "Bad Request",
-                errors
+                errors,
             });
         }
 
         const whereConditions = {};
-        if (minLat) whereConditions.lat = { [Sequelize.Op.gte]: parseFloat(minLat) };
-        if (maxLat) whereConditions.lat = { ...whereConditions.lat, [Sequelize.Op.lte]: parseFloat(maxLat) };
-        if (minLng) whereConditions.lng = { [Sequelize.Op.gte]: parseFloat(minLng) };
-        if (maxLng) whereConditions.lng = { ...whereConditions.lng, [Sequelize.Op.lte]: parseFloat(maxLng) };
-        if (minPrice) whereConditions.price = { [Sequelize.Op.gte]: parseFloat(minPrice) };
-        if (maxPrice) whereConditions.price = { ...whereConditions.price, [Sequelize.Op.lte]: parseFloat(maxPrice) };
+        if (minLat)
+            whereConditions.lat = { [Sequelize.Op.gte]: parseFloat(minLat) };
+        if (maxLat)
+            whereConditions.lat = {
+                ...whereConditions.lat,
+                [Sequelize.Op.lte]: parseFloat(maxLat),
+            };
+        if (minLng)
+            whereConditions.lng = { [Sequelize.Op.gte]: parseFloat(minLng) };
+        if (maxLng)
+            whereConditions.lng = {
+                ...whereConditions.lng,
+                [Sequelize.Op.lte]: parseFloat(maxLng),
+            };
+        if (minPrice)
+            whereConditions.price = {
+                [Sequelize.Op.gte]: parseFloat(minPrice),
+            };
+        if (maxPrice)
+            whereConditions.price = {
+                ...whereConditions.price,
+                [Sequelize.Op.lte]: parseFloat(maxPrice),
+            };
 
         const spots = await Spot.findAll({
             where: whereConditions,
@@ -154,14 +180,20 @@ router.get("/", async (req, res) => {
                 price: parseFloat(spotData.price),
                 createdAt: spotData.createdAt.toISOString(),
                 updatedAt: spotData.updatedAt.toISOString(),
-                avgRating: spotData.avgRating ? parseFloat(spotData.avgRating.toFixed(1)) : null,
+                avgRating: spotData.avgRating
+                    ? parseFloat(spotData.avgRating.toFixed(1))
+                    : null,
                 previewImage: spotData.previewImage || null,
             };
         });
 
-        res.status(200).json({ Spots: formattedSpots, page: pageInt, size: sizeInt });
+        res.status(200).json({
+            Spots: formattedSpots,
+            page: pageInt,
+            size: sizeInt,
+        });
     } catch (err) {
-        console.log(err)
+        console.log(err);
         console.error("Error retrieving spots:", err);
         res.status(500).json({ message: "Server error" });
     }
@@ -222,7 +254,7 @@ router.get("/current", restoreUser, requireAuth, async (req, res) => {
             avgRating: spot.avgRating
                 ? parseFloat(spot.avgRating.toFixed(1))
                 : null,
-            previewImage: spot.previewImage //|| null,
+            previewImage: spot.previewImage, //|| null,
         }));
 
         res.status(200).json({ Spots: formattedSpots });
@@ -647,7 +679,5 @@ router.delete("/:imageId", restoreUser, requireAuth, async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
-
-module.exports = router;
 
 module.exports = router;
