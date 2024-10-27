@@ -446,7 +446,7 @@ router.put(
                     name,
                     description,
                     price,
-                } = req.body)
+                })
             );
 
             // Format and send the updated spot as a response
