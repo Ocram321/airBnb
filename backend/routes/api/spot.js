@@ -77,24 +77,14 @@ router.get("/", async (req, res) => {
         const sizeInt = parseInt(size);
 
         const errors = {};
-        if (pageInt < 1)
-            errors.page = "Page must be greater than or equal to 1";
-        if (sizeInt < 1 || sizeInt > 20)
-            errors.size = "Size must be between 1 and 20";
-        if (minLat && isNaN(parseFloat(minLat)))
-            errors.minLat = "Minimum latitude is invalid";
-        if (maxLat && isNaN(parseFloat(maxLat)))
-            errors.maxLat = "Maximum latitude is invalid";
-        if (minLng && isNaN(parseFloat(minLng)))
-            errors.minLng = "Minimum longitude is invalid";
-        if (maxLng && isNaN(parseFloat(maxLng)))
-            errors.maxLng = "Maximum longitude is invalid";
-        if (minPrice && (isNaN(parseFloat(minPrice)) || minPrice < 0))
-            errors.minPrice =
-                "Minimum price must be greater than or equal to 0";
-        if (maxPrice && (isNaN(parseFloat(maxPrice)) || maxPrice < 0))
-            errors.maxPrice =
-                "Maximum price must be greater than or equal to 0";
+        if (pageInt < 1 || isNaN(pageInt)) errors.page = "Page must be greater than or equal to 1";
+        if (sizeInt < 1 || sizeInt > 20 || isNaN(sizeInt)) errors.size = "Size must be between 1 and 20";
+        if (minLat && isNaN(parseFloat(minLat))) errors.minLat = "Minimum latitude is invalid";
+        if (maxLat && isNaN(parseFloat(maxLat))) errors.maxLat = "Maximum latitude is invalid";
+        if (minLng && isNaN(parseFloat(minLng))) errors.minLng = "Minimum longitude is invalid";
+        if (maxLng && isNaN(parseFloat(maxLng))) errors.maxLng = "Maximum longitude is invalid";
+        if (minPrice && (isNaN(parseFloat(minPrice)) || minPrice < 0)) errors.minPrice = "Minimum price must be greater than or equal to 0";
+        if (maxPrice && (isNaN(parseFloat(maxPrice)) || maxPrice < 0)) errors.maxPrice = "Maximum price must be greater than or equal to 0";
 
         if (Object.keys(errors).length > 0) {
             return res.status(400).json({
@@ -218,7 +208,15 @@ router.get("/current", restoreUser, requireAuth, async (req, res) => {
                         "avgRating",
                     ],
                     // Select the preview image URL
-                    [Sequelize.col("SpotImages.url"), "previewImage"],
+                    [
+                        Sequelize.literal(`(
+                            SELECT "url"
+                            FROM "SpotImages" AS image
+                            WHERE image."spotId" = Spot.id AND image.preview = true
+                            LIMIT 1
+                        )`),
+                        "previewImage",
+                    ],
                 ],
             },
             include: [
@@ -239,28 +237,32 @@ router.get("/current", restoreUser, requireAuth, async (req, res) => {
         });
 
         // Format spots to match API spec and ensure correct data types
-        const formattedSpots = spots.map((spot) => ({
-            id: spot.id,
-            ownerId: spot.ownerId,
-            address: spot.address,
-            city: spot.city,
-            state: spot.state,
-            country: spot.country,
-            lat: parseFloat(spot.lat),
-            lng: parseFloat(spot.lng),
-            name: spot.name,
-            description: spot.description,
-            price: parseFloat(spot.price),
-            createdAt: new Date(spot.createdAt).toISOString(),
-            updatedAt: new Date(spot.updatedAt).toISOString(),
-            avgRating: spot.avgRating
-                ? parseFloat(spot.avgRating.toFixed(1))
-                : null,
-            previewImage: spot.previewImage, //|| null,
-        }));
+        const formattedSpots = spots.map((spotModel) => {
+            const spot = spotModel.toJSON();
+            return {
+                id: spot.id,
+                ownerId: spot.ownerId,
+                address: spot.address,
+                city: spot.city,
+                state: spot.state,
+                country: spot.country,
+                lat: parseFloat(spot.lat),
+                lng: parseFloat(spot.lng),
+                name: spot.name,
+                description: spot.description,
+                price: parseFloat(spot.price),
+                createdAt: new Date(spot.createdAt).toISOString(),
+                updatedAt: new Date(spot.updatedAt).toISOString(),
+                avgRating: spot.avgRating
+                    ? parseFloat(spot.avgRating.toFixed(1))
+                    : null,
+                previewImage: spot.previewImage || null,
+            };
+        });
 
         res.status(200).json({ Spots: formattedSpots });
     } catch (err) {
+        console.error(err);
         res.status(500).json({ message: "Server error" });
     }
 });
