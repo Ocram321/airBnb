@@ -1,0 +1,25 @@
+.navigation-bar {
+    display: flex;
+    list-style: none;
+    padding: 10px;
+    background-color: #333;
+    color: white;
+  }
+  
+  .navigation-bar li {
+    margin: 0 10px;
+  }
+  
+  .profile-dropdown {
+    position: absolute;
+    background-color: white;
+    color: black;
+    border: 1px solid #ccc;
+    list-style: none;
+    padding: 10px;
+    margin-top: 10px;
+  }
+  
+  .hidden {
+    display: none;
+  }
