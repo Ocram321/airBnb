@@ -4,7 +4,7 @@ const config = require('./index');
 module.exports = {
   development: {
     storage: config.dbFile,
-    ...(process.env.USE_LOCAL_POSTGRESS === 'false' ? {
+    ...(process.env.USE_LOCAL_POSTGRESS === 'true' ? {
       use_env_variable: 'DATABASE_URL',
       dialect: 'postgres',
       dialectOptions: {},
