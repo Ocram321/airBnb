@@ -118,6 +118,11 @@ router.get("/", async (req, res) => {
                 [Sequelize.Op.lte]: parseFloat(maxPrice),
             };
 
+        let schema = '';
+        if (process.env.NODE_ENV === "production") {
+            schema += `"${process.env.SCHEMA}".`;
+        }
+
         const spots = await Spot.findAll({
             where: whereConditions,
             limit: sizeInt,
@@ -127,7 +132,7 @@ router.get("/", async (req, res) => {
                     [
                         Sequelize.literal(`(
                             SELECT AVG(stars)
-                            FROM "Reviews"
+                            FROM ${schema}"Reviews"
                             WHERE "Reviews"."spotId" = "Spot"."id"
                         )`),
                         "avgRating",
@@ -135,7 +140,7 @@ router.get("/", async (req, res) => {
                     [
                         Sequelize.literal(`(
                             SELECT "url"
-                            FROM "SpotImages" AS "Image"
+                            FROM ${schema}"SpotImages" AS "Image"
                             WHERE "Image"."spotId" = "Spot"."id" AND "Image"."preview" = true
                             LIMIT 1
                         )`),
