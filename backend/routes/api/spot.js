@@ -202,6 +202,11 @@ router.get("/", async (req, res) => {
 router.get("/current", restoreUser, requireAuth, async (req, res) => {
     const userId = req.user.id;
 
+    let schema = '';
+    if (process.env.NODE_ENV === "production") {
+        schema += `"${process.env.SCHEMA}".`;
+    }
+
     try {
         const spots = await Spot.findAll({
             where: { ownerId: userId },
@@ -216,7 +221,7 @@ router.get("/current", restoreUser, requireAuth, async (req, res) => {
                     [
                         Sequelize.literal(`(
                             SELECT "url"
-                            FROM "SpotImages" AS "Image"
+                            FROM ${schema}"SpotImages" AS "Image"
                             WHERE "Image"."spotId" = "Spot"."id" AND "Image"."preview" = true
                             LIMIT 1
                         )`),

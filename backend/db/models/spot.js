@@ -2,6 +2,11 @@
 const { Model } = require("sequelize");
 const { Sequelize } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
+    let schema = '';
+    if (process.env.NODE_ENV === "production") {
+        schema += `"${process.env.SCHEMA}".`;
+    }
+    
     class Spot extends Model {
         /**
          * Helper method for defining associations.
@@ -80,7 +85,7 @@ module.exports = (sequelize, DataTypes) => {
                     attributes: {
                         include: [
                             Sequelize.literal(`(SELECT "url"
-                                FROM "SpotImages" AS image
+                                FROM ${schema}"SpotImages" AS image
                                 WHERE
                                     image.preview = true
                                 LIMIT 1)`),

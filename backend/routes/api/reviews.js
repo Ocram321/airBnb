@@ -30,6 +30,10 @@ const validateReview = [
 //removed review from front of route
 //Server error
 router.get("/current", requireAuth, async (req, res) => {
+    let schema = '';
+    if (process.env.NODE_ENV === "production") {
+        schema += `"${process.env.SCHEMA}".`;
+    }
     try {
         const reviews = await Review.findAll({
             where: { userId: req.user.id },
@@ -39,7 +43,7 @@ router.get("/current", requireAuth, async (req, res) => {
                     attributes: {
                         include: [
                             [
-                                Sequelize.literal(`(SELECT "url" FROM "SpotImages" as image
+                                Sequelize.literal(`(SELECT "url" FROM ${schema}"SpotImages" as image
                         WHERE image.preview = true LIMIT 1)`),
                                 "previewImage",
                             ],
