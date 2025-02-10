@@ -73,8 +73,8 @@ const AddSpotForm = () => {
 
 
         try {
-            await dispatch(AddSpot(newSpotData));
-            navigate(`/spots/${newSpotData.id}`);
+            const newSpot = await dispatch(AddSpot(newSpotData));
+            navigate(`/spots/${newSpot.id}`);
         } catch (err) {
             console.error('Failed to create spot', err);
         }
