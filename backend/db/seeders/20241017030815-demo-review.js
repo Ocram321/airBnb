@@ -15,13 +15,13 @@ module.exports = {
             [
                 {
                     spotId: 1,
-                    userId: 1,
-                    review: "This is my review",
-                    stars: 4,
+                    userId: 2,
+                    review: "This is my review for spot 2",
+                    stars: 5,
                 },
                 {
                     spotId: 2,
-                    userId: 2,
+                    userId: 1,
                     review: "This is my review for spot 2",
                     stars: 5,
                 },
