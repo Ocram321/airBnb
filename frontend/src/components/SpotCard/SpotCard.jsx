@@ -20,7 +20,7 @@ export const SpotCard = ({ spot }) => {
                     <p >{`${spot.city}, ${spot.state}`}</p>
                     <div >
 
-                        {spot.avgRating ? parseFloat(spot.avgRating).toFixed(1) : 'New'}
+                    ★{spot.avgRating ? parseFloat(spot.avgRating).toFixed(1) : 'New'}
 
                     </div>
                 </div>

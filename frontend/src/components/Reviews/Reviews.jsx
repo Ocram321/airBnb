@@ -1,6 +1,10 @@
 
-const ReviewsList = ({ reviews = [] }) => {
-    console.log('hY LOOK AT  THIS;', reviews)
+import OpenModalButton from '../OpenModalButton/OpenModal';
+import DeleteReview from './DeleteReview';
+import UpdateReview from './UpdateReview'; 
+
+const ReviewsList = ({ reviews = [], user, isOwner, spotId  }) => {
+
     const date = (dateAdded) => {
         const date = new Date(dateAdded)
         const options = { year: 'numeric', month: 'long' };
@@ -9,15 +13,45 @@ const ReviewsList = ({ reviews = [] }) => {
 
     return (
         <div>
-            {reviews.map(review => (
-                <li key={review.id}>
-                    <div>{review.User ? review.User.firstName : 'Unknown User'}</div>
-                    <div>{date(review.createdAt)}</div>
-                    <p>{review.review}</p>
-                </li>
-            ))}
-        </div>
-    )
-}
+
+      {reviews.length > 0 ? (
+        <ul >
+          {reviews.map(review => (
+            <li key={review.id} >
+              <div className="review-header">
+                <strong>{review.User ? review.User.firstName : 'Unknown User'}</strong>
+                <span >{date(review.createdAt)}</span>
+              </div>
+              <p >{review.review}</p>
+
+              {/* Show Update and Delete buttons for reviews posted by the logged-in user */}
+              {user?.id === review.userId && (
+                <div className="review-actions">
+                  {/* Update Button */}
+                  <OpenModalButton 
+                    buttonText="Update"
+                    modalComponent={<UpdateReview review={review} spotId={spotId} />}
+                    
+                  />
+
+                  {/* Delete Button */}
+                  <OpenModalButton 
+                    buttonText="Delete"
+                    modalComponent={<DeleteReview reviewId={review.id} />}
+                   
+                  />
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        !isOwner && user && (
+          <p className="no-reviews-message">Be the first to post a review!</p>
+        )
+      )}
+    </div>
+  );
+};
 
 export default ReviewsList;
