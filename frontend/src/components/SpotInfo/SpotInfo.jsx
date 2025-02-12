@@ -48,6 +48,8 @@ const SpotDetails = () => {
 
     const canPostReview = user && Owner && Owner.id && !reviews.some(review => review.userId === user.id) && user.id !== Owner.id;
 
+    console.log(Object.entries(user), Owner, reviews)
+
     return (
         <div >
             <h1>{name}</h1>
