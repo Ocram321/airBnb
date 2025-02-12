@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import ProfileButton from './ProfileButton';
 import './Navigation.css'
-import Favicon from '../../../public/favicon.ico';
+import Favicon from '../../images/favicon.ico';
 
 function Navigation({ isLoaded }) {
     const sessionUser = useSelector(state => state.session.user);

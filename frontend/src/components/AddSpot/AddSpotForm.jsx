@@ -124,7 +124,7 @@ const AddSpotForm = () => {
             {errors.description && <p className="error">{errors.description}</p>}
 
             <h3>Create a title for your spot</h3>
-            <div>Catch guests' attention with a spot title that highlights what makes your place special.</div>
+            <div>Catch guests`&apos;` attention with a spot title that highlights what makes your place special.</div>
             <br/>
 
             <input
