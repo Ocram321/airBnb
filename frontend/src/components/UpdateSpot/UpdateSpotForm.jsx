@@ -7,7 +7,7 @@ const UpdateSpotForm = () => {
     const { spotId } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const spotDetails = useSelector(state => state.spots.spotDetails);
+    const spotInfo = useSelector(state => state.spots.spotInfo);
     const [form, setForm] = useState({
         country: '',
         address: '',
@@ -28,22 +28,22 @@ const UpdateSpotForm = () => {
     }, [dispatch, spotId]);
 
     useEffect(() => {
-        if (spotDetails && spotDetails.id === parseInt(spotId)) {
+        if (spotInfo && spotInfo.id === parseInt(spotId)) {
             setForm({
-                country: spotDetails.country || '',
-                address: spotDetails.address || '',
-                city: spotDetails.city || '',
-                state: spotDetails.state || '',
-                lat: spotDetails.lat || '',
-                lng: spotDetails.lng || '',
-                description: spotDetails.description || '',
-                name: spotDetails.name || '',
-                price: spotDetails.price || '',
-                previewImageUrl: spotDetails.SpotImages?.find(img => img.preview)?.url || '',
-                imageUrls: spotDetails.SpotImages?.filter(img => !img.preview).map(img => img.url) || ['', '', '', ''],
+                country: spotInfo.country || '',
+                address: spotInfo.address || '',
+                city: spotInfo.city || '',
+                state: spotInfo.state || '',
+                lat: spotInfo.lat || '',
+                lng: spotInfo.lng || '',
+                description: spotInfo.description || '',
+                name: spotInfo.name || '',
+                price: spotInfo.price || '',
+                previewImageUrl: spotInfo.SpotImages?.find(img => img.preview)?.url || '',
+                imageUrls: spotInfo.SpotImages?.filter(img => !img.preview).map(img => img.url) || ['', '', '', ''],
             });
         }
-    }, [spotDetails, spotId]);
+    }, [spotInfo, spotId]);
 
     const onInputChange = (e) => {
         const { name, value } = e.target;

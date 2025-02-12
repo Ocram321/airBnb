@@ -34,10 +34,21 @@ const DeleteSpot = ({ spotId }) => {
                 <button
                     onClick={onClickDelete}
                     disabled={isDeleting}
+                    style={{
+                        backgroundColor: "red",
+                        color: "white",
+                    }}
                 >
                     {isDeleting ? "Deleting..." : "Yes (Delete Spot)"}
                 </button>
-                <button className="cancel-button" onClick={onClickCancel}>
+                <button
+                    className="cancel-button"
+                    onClick={onClickCancel}
+                    style={{
+                        backgroundColor: "gray",
+                        color: "white",
+                    }}
+                >
                     No (Keep Spot)
                 </button>
             </div>

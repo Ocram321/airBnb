@@ -26,6 +26,15 @@ function LoginFormModal() {
       });
   };
 
+  const loginDemoUser = () => {
+    return dispatch(sessionActions.login({
+      credential: 'demo@user.io',
+      password: 'password'
+    }))
+      .then(closeModal)
+      .catch((err) => console.error('Error logging in as demo user:', err));
+  };
+
   return (
     <>
       <h1>Log In</h1>
@@ -51,7 +60,17 @@ function LoginFormModal() {
         {errors.credential && (
           <p>{errors.credential}</p>
         )}
-        <button type="submit">Log In</button>
+        <button
+          type="submit"
+          disabled={credential.length < 4 || password.length < 6}
+        >
+          Log In
+        </button>
+        <button
+          onClick={() => loginDemoUser()}
+        >
+          Login as demo user
+        </button>
       </form>
     </>
   );

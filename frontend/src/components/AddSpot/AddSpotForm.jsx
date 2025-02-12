@@ -85,6 +85,8 @@ const AddSpotForm = () => {
             <h1>Create a new Spot</h1>
 
             <h3>Where&apos;s your place located?</h3>
+            <div>Guests will only get your exact address once they booked a reservation.</div>
+            <br/>
             <label>Country</label>
             <input name="country" value={spotForm.country} onChange={onInputChange} />
             {errors.country && <p className="error">{errors.country}</p>}
@@ -107,7 +109,12 @@ const AddSpotForm = () => {
             <label>Longitude (Optional)</label>
             <input name="lng" value={spotForm.lng} onChange={onInputChange} />
 
+            <hr/>
+
             <h3>Describe your place to guests</h3>
+            <div>Mention the best features of your space, any special amentities like fast wifi or parking, and what you love about the neighborhood.</div>
+            <br/>
+
             <textarea
                 name="description"
                 value={spotForm.description}
@@ -117,6 +124,9 @@ const AddSpotForm = () => {
             {errors.description && <p className="error">{errors.description}</p>}
 
             <h3>Create a title for your spot</h3>
+            <div>Catch guests' attention with a spot title that highlights what makes your place special.</div>
+            <br/>
+
             <input
                 name="name"
                 placeholder="Name of your spot"
@@ -126,6 +136,9 @@ const AddSpotForm = () => {
             {errors.name && <p className="error">{errors.name}</p>}
 
             <h3>Set a base price for your spot</h3>
+            <div>Competitive pricing can help your listing stand out and rank higher in search results.</div>
+            <br/>
+
             <input
                 type="number"
                 name="price"
@@ -135,6 +148,9 @@ const AddSpotForm = () => {
             />
             {errors.price && <p className="error">{errors.price}</p>}
             <h3>Liven up your spot with photos</h3>
+            <div>Submit a link to at least one photo to publish your spot.</div>
+            <br/>
+
             <label>Preview Image URL</label>
             <input
                 name="previewImageUrl"

@@ -38,6 +38,7 @@ const PostReview = ({ spotId }) => {
         <div >
             <h2>How was your stay?</h2>
             <form onSubmit={handleSubmit}>
+                {errors.message && <p className="error">{errors.message}</p>}
                 {errors.review && <p className="error">{errors.review}</p>}
                 <textarea
                     placeholder="Leave your review here..."
@@ -61,7 +62,7 @@ const PostReview = ({ spotId }) => {
                 </div>
 
                 <button type="submit" disabled={review.length < 10 || stars === 0}>
-                    Submit Review
+                    Submit Your Review.
                 </button>
             </form>
         </div>

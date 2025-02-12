@@ -41,7 +41,7 @@ const ManageSpots = () => {
 
   return (
     <div >
-      <h1>Manage Your Spots</h1>
+      <h1>Manage Spots</h1>
       <button onClick={() => navigate('/spots/new')} >
         Create a New Spot
       </button>
@@ -49,16 +49,17 @@ const ManageSpots = () => {
         {userSpots.map((spot) => (
           <div
             key={spot.id}
-            onClick={() => handleTileClick(spot.id)}
           >
-            {spot.previewImage ? (
-              <img src={spot.previewImage} alt={spot.name} />
-            ) : (
-              <div className="placeholder-image">No Image Available</div>
-            )}
-            <p >{`${spot.city}, ${spot.state}`}</p>
-            <div><FaStar /> {spot.avgRating ? parseFloat(spot.avgRating).toFixed(1) : 'New'}
-              <div>${spot.price}/night</div>
+            <div onClick={() => handleTileClick(spot.id)}>
+              {spot.previewImage ? (
+                <img src={spot.previewImage} alt={spot.name} />
+              ) : (
+                <div className="placeholder-image">No Image Available</div>
+              )}
+              <p >{`${spot.city}, ${spot.state}`}</p>
+              <div><FaStar /> {spot.avgRating ? parseFloat(spot.avgRating).toFixed(1) : 'New'}
+                <div>${spot.price}/night</div>
+              </div>
             </div>
             <div >
               <button onClick={(e) => {

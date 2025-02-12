@@ -36,6 +36,7 @@ const SpotDetails = () => {
         SpotImages = [],
         Owner = {},
         description,
+        price,
     } = spot;
 
     const largeImage = SpotImages?.find(img => img.preview === true) || SpotImages?.[0];
@@ -47,8 +48,6 @@ const SpotDetails = () => {
     const numReviews = reviews.length;
 
     const canPostReview = user && Owner && Owner.id && !reviews.some(review => review.userId === user.id) && user.id !== Owner.id;
-
-    console.log(Object.entries(user), Owner, reviews)
 
     return (
         <div >
@@ -80,7 +79,13 @@ const SpotDetails = () => {
                 </div>
             </div>
 
-            <div >
+            <div style={{
+                backgroundColor: '#DDD',
+                border: 2,
+                borderColor: "black",
+                borderStyle: "solid",
+            }}>
+                {price}
                 <h2>
                     <span>★</span> {avgRating}
                     {numReviews > 0 && (
@@ -90,7 +95,18 @@ const SpotDetails = () => {
                         </>
                     )}
                 </h2>
-
+                <button onClick={() => alert('Feature coming soon')}>Reserve</button>
+            </div>
+            <div>
+                <h2>
+                    <span>★</span> {avgRating}
+                    {numReviews > 0 && (
+                        <>
+                            <span > · </span>
+                            <span>{numReviews} {numReviews === 1 ? 'Review' : 'Reviews'}</span>
+                        </>
+                    )}
+                </h2>
                 {canPostReview && (
                     <OpenModalButton
                         buttonText="Post Your Review"

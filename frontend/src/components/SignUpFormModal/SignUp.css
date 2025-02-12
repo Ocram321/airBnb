@@ -1,0 +1,41 @@
+.signup-modal {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin: auto;
+    text-align: center;
+    min-width: 500px;
+  }
+  
+  .signup-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .signup-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .signup-input {
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 16px;
+  }
+  
+  .signup-button {
+    background: lightgreen;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    color: gray;
+  }
+  
+  .signup-button:disabled {
+    background: lightgray;
+    cursor: not-allowed;
+  }

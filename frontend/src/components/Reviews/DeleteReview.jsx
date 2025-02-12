@@ -33,10 +33,20 @@ const DeleteReview = ({ reviewId }) => {
                 className="delete-button"
                 onClick={handleDelete}
                 disabled={isDeleting}
+                style={{
+                    backgroundColor: "red",
+                    color: "white",
+                }}
             >
                 {isDeleting ? "Deleting..." : "Yes (Delete Review)"}
             </button>
-            <button onClick={handleCancel}>
+            <button
+                onClick={handleCancel}
+                style={{
+                    backgroundColor: "gray",
+                    color: "white",
+                }}
+            >
                 No (Keep Review)
             </button>
         </div>
