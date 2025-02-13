@@ -61,8 +61,8 @@
 
 .spot-host-reserve-price {
     display: flex;
-    justify-content: space-between; /* Ensures space between info and reserve box */
-    flex-wrap: wrap; /* Helps in responsive design */
+    justify-content: space-between; 
+    flex-wrap: wrap; 
 }
 
 .spot-reserve-box {
@@ -74,10 +74,9 @@
     flex-direction: column;
     align-items: center;
     margin-bottom: 20px;
-    position: relative; /* Adjusts position inside flex */
+    position: relative; 
     width: 300px;
-    /* Aligns box to the right */
-    margin-left: auto; /* Pushes the box to the right side */
+    margin-left: auto; 
 }
 
 .spot-price {

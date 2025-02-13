@@ -1,6 +1,6 @@
 .spots-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 16px; 
     padding: 16px;
   }
@@ -22,8 +22,7 @@
     border-radius: 5px;
     margin: 5px;
   }
-  
-  /* SpotCard (individual tile) */
+
   .spot-tile {
     border: 1px solid #ddd;
     border-radius: 8px;

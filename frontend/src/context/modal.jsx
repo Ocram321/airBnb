@@ -2,10 +2,9 @@ import { useRef, useState, useContext, createContext } from 'react';
 import ReactDOM from 'react-dom';
 import './Modal.css';
 
-// Create the Modal context
+
 const ModalContext = createContext();
 
-// ModalProvider wraps the app and provides modal functionality
 export function ModalProvider({ children }) {
   const modalRef = useRef();
   const [modalContent, setModalContent] = useState(null);
@@ -37,7 +36,6 @@ export function ModalProvider({ children }) {
   );
 }
 
-// Modal renders modal content using ReactDOM.createPortal
 export function Modal() {
   const { modalRef, modalContent, closeModal } = useContext(ModalContext);
 
@@ -52,5 +50,4 @@ export function Modal() {
   );
 }
 
-// Custom hook for accessing modal context
 export const useModal = () => useContext(ModalContext);

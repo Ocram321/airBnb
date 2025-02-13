@@ -24,21 +24,17 @@ const ReviewsList = ({ reviews = [], user, isOwner, spotId  }) => {
               </div>
               <p >{review.review}</p>
 
-              {/* Show Update and Delete buttons for reviews posted by the logged-in user */}
+              
               {user?.id === review.userId && (
                 <div className="review-actions">
-                  {/* Update Button */}
                   <OpenModalButton 
                     buttonText="Update"
                     modalComponent={<UpdateReview review={review} spotId={spotId} />}
-                    
                   />
 
-                  {/* Delete Button */}
                   <OpenModalButton 
                     buttonText="Delete"
-                    modalComponent={<DeleteReview reviewId={review.id} />}
-                   
+                    modalComponent={<DeleteReview reviewId={review.id} />}   
                   />
                 </div>
               )}
