@@ -17,6 +17,7 @@ function ProfileButton({ user }) {
     e.stopPropagation(); // Keep from bubbling up to document and triggering closeMenu
     setShowMenu(!showMenu);
   };
+  console.log(showMenu);
 
   useEffect(() => {
     if (!showMenu) return;
@@ -42,23 +43,52 @@ function ProfileButton({ user }) {
     navigate('/')
   };
 
-  const ulClassName = "profile-dropdown" + (showMenu ? "" : " hidden");
-
   return (
-    <>
-      <button onClick={toggleMenu}>
+    <div style={{
+      position: "relative"
+    }}>
+      <button onClick={toggleMenu} style={{
+        marginTop: 0,
+        cursor: 'pointer',
+      }}>
         <FaUserCircle />
       </button>
-      <ul className={ulClassName} ref={ulRef}>
+      <div
+        ref={ulRef}
+        className="profile-dropdown"
+        style={{
+          display: showMenu ? "flex" : "none",
+          flexDirection: 'column',
+          position: 'absolute',
+          top: 0,
+          right: "100%",
+          minWidth: 150,
+          backgroundColor: "white",
+          borderWidth: 2,
+          borderColor: "black",
+          borderStyle: "solid",
+          borderRadius: 10,
+          padding: 5,
+          gap: 5,
+          zIndex: 1,
+        }}
+      >
         {user ? (
           <>
-            <li>Hello, {user.username}</li>
-            <li>{user.firstName} {user.lastName}</li>
-            <li>{user.email}</li>
+            <div>Hello, {user.username}</div>
+            <div>{user.email}</div>
+            <div style={{
+              width: '100%',
+              borderBottom: '1px black solid',
+            }}/>
             <NavLink to="/spots/current">Manage Spots</NavLink>
-            <li>
+            <div style={{
+              width: '100%',
+              borderBottom: '1px black solid',
+            }}/>
+            <div>
               <button onClick={logout}>Log Out</button>
-            </li>
+            </div>
           </>
         ) : (
           <>
@@ -74,8 +104,8 @@ function ProfileButton({ user }) {
             />
           </>
         )}
-      </ul>
-    </>
+      </div>
+    </div>
   );
 }
 

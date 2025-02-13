@@ -6,6 +6,7 @@ import '../SpotCard/SpotCard.css'
 import { FaStar } from 'react-icons/fa';
 import DeleteSpot from '../DeleteSpot';
 import OpenModalButton from '../OpenModalButton/OpenModal';
+import SpotCard from '../SpotCard/SpotCard';
 
 
 const ManageSpots = () => {
@@ -45,21 +46,13 @@ const ManageSpots = () => {
       <button onClick={() => navigate('/spots/new')} >
         Create a New Spot
       </button>
-      <div >
+      <div className='spots-container' >
         {userSpots.map((spot) => (
           <div
             key={spot.id}
           >
             <div onClick={() => handleTileClick(spot.id)}>
-              {spot.previewImage ? (
-                <img src={spot.previewImage} alt={spot.name} />
-              ) : (
-                <div className="placeholder-image">No Image Available</div>
-              )}
-              <p >{`${spot.city}, ${spot.state}`}</p>
-              <div><FaStar /> {spot.avgRating ? parseFloat(spot.avgRating).toFixed(1) : 'New'}
-                <div>${spot.price}/night</div>
-              </div>
+              <SpotCard spot={spot} />
             </div>
             <div >
               <button onClick={(e) => {

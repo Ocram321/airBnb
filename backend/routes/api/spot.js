@@ -373,6 +373,8 @@ router.post("/", requireAuth, validateSpot, async (req, res) => {
         name,
         description,
         price,
+        previewImageUrl,
+        imageUrls = []
     } = req.body;
 
     try {
@@ -389,8 +391,23 @@ router.post("/", requireAuth, validateSpot, async (req, res) => {
             price,
         });
 
+        for (let url of imageUrls) {
+            if (url) {
+                try {
+                    const spotImage = await SpotImage.create({
+                        spotId: newSpot.id,
+                        url,
+                        preview: url === previewImageUrl,
+                    });
+                } catch (imageError) {
+                    console.error('Error creating additional image:', imageError);
+                }
+            }
+        }
+
         res.status(201).json(newSpot);
     } catch (err) {
+        console.error(err);
         res.status(400).json({ message: "Validation error", errors: err });
     }
 });

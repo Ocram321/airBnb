@@ -1,0 +1,95 @@
+.update-spot-form {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    display: block; /* Changed from table-column to block */
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    text-align: center; /* Center text within the form */
+  }
+  
+  /* Ensure each label, input, textarea, and button is displayed as a block-level element */
+  .update-spot-form label,
+  .update-spot-form input,
+  .update-spot-form textarea,
+  .update-spot-form button {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    margin-top: 5px;
+  }
+  
+  /* Optionally, left-align the label text if needed */
+  .update-spot-form label {
+    text-align: left;
+    font-weight: 600;
+  }
+  
+  .update-spot-form h2 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  /* Make each label a block-level element to force a vertical layout */
+  .update-spot-form label {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+    font-weight: 600;
+  }
+  
+  /* Optional: Wrap the label text in a span for extra styling */
+  .update-spot-form label span {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  /* Style the input fields and textareas */
+  .update-spot-form input,
+  .update-spot-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
+  
+  /* Ensure textareas are resizable vertically */
+  .update-spot-form textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+  
+  /* Style error messages */
+  .update-spot-form .error {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 5px;
+  }
+  
+  /* Style the submit button */
+  .update-spot-form .update-button {
+    display: block;
+    width: 100%;
+    max-width: 200px;
+    padding: 10px 20px;
+    margin: 20px auto 0;
+    background-color: #ff5a5f;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    text-align: center;
+  }
+  
+  .update-spot-form .update-button:hover {
+    background-color: #e0484e;
+  }
+  

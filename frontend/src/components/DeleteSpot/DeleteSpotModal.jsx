@@ -26,11 +26,15 @@ const DeleteSpot = ({ spotId }) => {
     };
 
     return (
-        <div>
+        <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: 'fit'
+        }}>
             <h2>Confirm Delete</h2>
             <p>Are you sure you want to remove this spot from the listings?</p>
             {error && <p className="error-message">{error}</p>}
-            <div>
                 <button
                     onClick={onClickDelete}
                     disabled={isDeleting}
@@ -51,7 +55,6 @@ const DeleteSpot = ({ spotId }) => {
                 >
                     No (Keep Spot)
                 </button>
-            </div>
         </div>
     );
 };

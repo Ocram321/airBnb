@@ -51,7 +51,7 @@ export const getInfoById = (spotId) => async (dispatch) => {
             const data = await res.json();
             dispatch(getSpotInfo(data));
             return data;
-        } 
+        }
     } catch (error) {
         console.error('Error retrieving spotInfo', error);
         throw error;

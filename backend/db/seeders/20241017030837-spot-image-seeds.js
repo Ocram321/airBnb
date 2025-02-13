@@ -14,17 +14,17 @@ module.exports = {
             [
                 {
                     spotId: 1,
-                    url: "https://randompicture.com/image1.jpg",
+                    url: "https://mario.wiki.gallery/images/3/3a/SM3DL-_Bowser%27s_Castle_Intro.png",
                     preview: true,
                 },
                 {
                     spotId: 1,
-                    url: "https://randompicture.com/image2.jpg",
+                    url: "https://mario.wiki.gallery/images/8/8c/Peach%27s_Castle_SM64_exterior.png",
                     preview: false,
                 },
                 {
                     spotId: 2,
-                    url: "https://randompicture.com/image3.jpg",
+                    url: "https://media.sketchfab.com/models/f609112d34b74fb99971b92ead5a07f0/thumbnails/319ee72491ec41ce999d27d28246fb72/1508d8b579134aa0878e80e40b806550.jpeg",
                     preview: true,
                 },
             ],

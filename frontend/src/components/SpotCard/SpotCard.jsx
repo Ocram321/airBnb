@@ -17,39 +17,26 @@ export const SpotCard = ({ spot }) => {
             onClick={handleClick}
             onMouseEnter={() => setShowTooltip(true)}
             onMouseLeave={() => setShowTooltip(false)}
-            style={{
-                position: 'relative'
-            }}
+            style={{ cursor: 'pointer' }}
         >
             {spot.previewImage ? (
-                <img src={spot.previewImage} alt={spot.name} className="spot-image" />
+                <img src={spot.previewImage} alt={spot.name} className="spot-image" style={{ cursor: 'pointer' }} />
             ) : (
-                <div>No Image Available</div>
+                <div className="spot-no-image" style={{ cursor: 'pointer' }}>No Image Available</div>
             )}
-            <div >
-                <div >
-                    <p >{`${spot.city}, ${spot.state}`}</p>
-                    <div>★{spot.avgRating ? parseFloat(spot.avgRating).toFixed(1) : 'New'}</div>
-                    <div >
-                    </div>
+            <div className="spot-info">
+                <div className="spot-header">
+                    <div className="spot-location" style={{ cursor: 'pointer' }}>{`${spot.city}, ${spot.state}`}</div>
+                    <div className="spot-rating" style={{ cursor: 'pointer' }}>★{spot.avgRating ? parseFloat(spot.avgRating).toFixed(1) : 'New'}</div>
                 </div>
-                <div>${spot.price}/night</div>
+                <div className="spot-price" style={{ cursor: 'pointer' }}>${spot.price}/night</div>
             </div>
             {showTooltip && (
-                <div style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    backgroundColor: 'white',
-                    border: 2,
-                    borderColor: "black",
-                    borderStyle: "solid",
-                }}>
+                <div className="spot-tooltip" style={{ cursor: 'pointer' }}>
                     {spot.name}
                 </div>
             )}
         </div>
-    )
-}
-
-export default SpotCard
+    );
+};
+export default SpotCard;

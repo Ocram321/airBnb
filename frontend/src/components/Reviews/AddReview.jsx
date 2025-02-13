@@ -35,9 +35,19 @@ const PostReview = ({ spotId }) => {
     };
 
     return (
-        <div >
-            <h2>How was your stay?</h2>
-            <form onSubmit={handleSubmit}>
+        <div style={{
+            minWidth: 300,
+        }}>
+            <div style={{
+                fontSize: 24,
+                marginBottom: 10,
+                textAlign: 'center'
+            }}>How was your stay ?</div>
+            <form onSubmit={handleSubmit} style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+            }}>
                 {errors.message && <p className="error">{errors.message}</p>}
                 {errors.review && <p className="error">{errors.review}</p>}
                 <textarea
@@ -45,6 +55,10 @@ const PostReview = ({ spotId }) => {
                     value={review}
                     onChange={(e) => setReview(e.target.value)}
                     required
+                    style={{
+                        width: '100%',
+                        minHeight: 100,
+                    }}
                 />
                 {errors.stars && <p className="error">{errors.stars}</p>}
 
@@ -54,15 +68,18 @@ const PostReview = ({ spotId }) => {
                             key={star}
                             className={star <= stars ? "star selected" : "star"}
                             onClick={() => handleStarClick(star)}
+                            style={{
+                                cursor: 'pointer',
+                            }}
                         >
-                        ★
+                        {stars >= star ? '★' : '☆'}
                         </span>
                     ))}
                     Stars
                 </div>
 
                 <button type="submit" disabled={review.length < 10 || stars === 0}>
-                    Submit Your Review.
+                    Submit Your Review
                 </button>
             </form>
         </div>

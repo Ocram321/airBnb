@@ -4,6 +4,24 @@
     gap: 16px; 
     padding: 16px;
   }
+
+  .spot-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    max-width: 350px;
+  }
+
+  .spot-tooltip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 5px;
+    background-color: white;
+    border-radius: 5px;
+    margin: 5px;
+  }
   
   /* SpotCard (individual tile) */
   .spot-tile {
@@ -18,10 +36,28 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
   
-  .spot-tile img.spot-image {
-    width: 100%;
-    height: 150px;
-    object-fit: cover; 
+  .spot-image {
+    width: "100%";
+    height: 250px;
+    object-fit: cover;
+  }
+
+  .spot-no-image {
+    width: "100%";
+    height: 250px;
+  }
+
+  .spot-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 14px;
+  }
+
+  .spot-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
   
   .spot-tile .placeholder-image {

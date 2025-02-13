@@ -25,7 +25,11 @@ const DeleteReview = ({ reviewId }) => {
     };
 
     return (
-        <div >
+        <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+        }}>
             <h2>Confirm Delete</h2>
             <p>Are you sure you want to delete this review?</p>
             {error && <p className="error-message">{error}</p>}

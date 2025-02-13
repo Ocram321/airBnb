@@ -9,6 +9,8 @@ import ReviewsList from '../Reviews';
 import OpenModalButton from '../OpenModalButton/OpenModal';
 import PostReview from '../Reviews/AddReview';
 
+import "./SpotInfo.css"
+
 
 
 const SpotDetails = () => {
@@ -50,59 +52,53 @@ const SpotDetails = () => {
     const canPostReview = user && Owner && Owner.id && !reviews.some(review => review.userId === user.id) && user.id !== Owner.id;
 
     return (
-        <div >
-            <h1>{name}</h1>
-            <p>{city}, {state}, {country}</p>
+<div className="spot-details-container">
+            <h1 className="spot-title">{name}</h1>
+            <p className="spot-location">{city}, {state}, {country}</p>
 
-
-            <div>
+            <div className="spot-images-container">
                 {largeImage && (
-                    <img src={largeImage.url} alt={`${name} Preview`} />
+                    <img className="large-image" src={largeImage.url} alt={`${name} Preview`} />
                 )}
-                <div >
+                <div className="small-images-container">
                     {smallImages.map(img => (
-                        <img key={img.id} src={img.url} alt={`${name} Image ${img.id}`} />
+                        <img className="small-image" key={img.id} src={img.url} alt={`${name} Image ${img.id}`} />
                     ))}
                 </div>
             </div>
 
             <hr className="separator" />
+            
+            <div className="spot-host-reserve-price">
+                <div className="spot-host-info">
+                    <div className="host-name">Hosted by {Owner.firstName || 'Unknown'} {Owner.lastName || 'User'}</div>
+                    <p className="spot-description">{description}</p>
+                </div>
 
-            <div>
-                <div>
+                <div className="spot-reserve-box">
+                    <div className="spot-price">${price} <span className="night-text">/night</span></div>
                     <div>
-                        <p>Hosted by {Owner.firstName || 'Unknown'} {Owner.lastName || 'User'}</p>
-                    </div>
-                    <div>
-                        <p>{description}</p>
+                        <h2 className="spot-rating">
+                            <span>★</span> {avgRating}
+                            {numReviews > 0 && (
+                                <>
+                                    <span className="dot-separator"> · </span>
+                                    <span>{numReviews} {numReviews === 1 ? 'Review' : 'Reviews'}</span>
+                                </>
+                            )}
+                        </h2>
+                        <button className="reserve-button" onClick={() => alert('Feature coming soon')}>Reserve</button>
                     </div>
                 </div>
             </div>
+            <hr className="separator"/>
 
-            <div style={{
-                backgroundColor: '#DDD',
-                border: 2,
-                borderColor: "black",
-                borderStyle: "solid",
-            }}>
-                {price}
+            <div className="reviews-section">
                 <h2>
                     <span>★</span> {avgRating}
                     {numReviews > 0 && (
                         <>
-                            <span > · </span>
-                            <span>{numReviews} {numReviews === 1 ? 'Review' : 'Reviews'}</span>
-                        </>
-                    )}
-                </h2>
-                <button onClick={() => alert('Feature coming soon')}>Reserve</button>
-            </div>
-            <div>
-                <h2>
-                    <span>★</span> {avgRating}
-                    {numReviews > 0 && (
-                        <>
-                            <span > · </span>
+                            <span className="dot-separator"> · </span>
                             <span>{numReviews} {numReviews === 1 ? 'Review' : 'Reviews'}</span>
                         </>
                     )}
@@ -110,16 +106,15 @@ const SpotDetails = () => {
                 {canPostReview && (
                     <OpenModalButton
                         buttonText="Post Your Review"
-                        modalComponent={<PostReview spotId={id}
-                            data-testid='review-form' />}
+                        modalComponent={<PostReview spotId={id} data-testid='review-form' />}
                     />
                 )}
-
 
                 <ReviewsList reviews={reviews} user={user} isOwner={user?.id === Owner?.id} />
             </div>
         </div>
     );
 };
+
 
 export default SpotDetails;

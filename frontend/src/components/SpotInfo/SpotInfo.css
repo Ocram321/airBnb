@@ -1,0 +1,115 @@
+.spot-details-container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.spot-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.spot-location {
+    font-size: 18px;
+    color: gray;
+    margin-bottom: 20px;
+}
+
+.spot-images-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.large-image {
+    width: 60%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.small-images-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 40%;
+}
+
+.small-image {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.spot-host-info {
+    margin-bottom: 20px;
+}
+
+.host-name {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.spot-description {
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.spot-host-reserve-price {
+    display: flex;
+    justify-content: space-between; /* Ensures space between info and reserve box */
+    flex-wrap: wrap; /* Helps in responsive design */
+}
+
+.spot-reserve-box {
+    background: #f8f8f8;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative; /* Adjusts position inside flex */
+    width: 300px;
+    /* Aligns box to the right */
+    margin-left: auto; /* Pushes the box to the right side */
+}
+
+.spot-price {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.spot-rating {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.dot-separator {
+    margin: 0 5px;
+}
+
+.reserve-button {
+    background: #ff5a5f;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.reserve-button:hover {
+    background: #e0484e;
+}
+
+.reviews-section {
+    padding-top: 20px;
+    border-top: 2px black solid;
+}
