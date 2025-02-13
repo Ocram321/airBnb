@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { UserSpots } from '../../store/spot';
 import '../SpotCard/SpotCard.css'
-import { FaStar } from 'react-icons/fa';
 import DeleteSpot from '../DeleteSpot';
 import OpenModalButton from '../OpenModalButton/OpenModal';
 import SpotCard from '../SpotCard/SpotCard';
