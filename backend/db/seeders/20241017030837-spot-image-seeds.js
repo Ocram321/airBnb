@@ -25,10 +25,10 @@ module.exports = {
                 { spotId: 2, url: "https://imgur.com/ikhFj9R", preview: false },
                 
                 { spotId: 3, url: "https://imgur.com/MhrnW2S", preview: true },
-                { spotId: 3, url: "https://imgur.com/bsRNYrf", preview: false },
                 { spotId: 3, url: "https://imgur.com/9Qe2tXZ", preview: false },
                 { spotId: 3, url: "https://imgur.com/KpIJSNU", preview: false },
                 { spotId: 3, url: "https://imgur.com/BDsVJE6", preview: false },
+                { spotId: 3, url: "https://imgur.com/XiRsIEb", preview: false },
                 
                 { spotId: 4, url: "https://imgur.com/XiRsIEb", preview: true },
                 { spotId: 4, url: "https://imgur.com/rnEb33E", preview: false },
