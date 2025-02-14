@@ -59,18 +59,21 @@ const UpdateReview = ({ review }) => {
                 </div>
                 <div >
                     {errors.stars && <p >{errors.stars}</p>}
-                    <div>
-                        {[1, 2, 3, 4, 5].map((star) => (
-                            <span
-                                key={star}
-
-                                onClick={() => handleStarClick(star)}
-                            >
-                                ★
-                            </span>
-                        ))}
-                        <span> stars</span>
-                    </div>
+                    <div className="star-rating">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                        <span
+                            key={star}
+                            className={star <= stars ? "star selected" : "star"}
+                            onClick={() => handleStarClick(star)}
+                            style={{
+                                cursor: 'pointer',
+                            }}
+                        >
+                        {stars >= star ? '★' : '☆'}
+                        </span>
+                    ))}
+                    Stars
+                </div>
                 </div>
                 <button type="submit" >
                     Update Your Review
