@@ -34,7 +34,7 @@ module.exports = {
                 {
                     spotId: 4,
                     userId: 3,
-                    review: "Absolutely thrilling! Bowser’s Castle was the perfect mix of danger and excitement. Watch out for the lava pits!",
+                    review: "Absolutely thrilling! Bowsers Castle was the perfect mix of danger and excitement. Watch out for the lava pits!",
                     stars: 4,
                 },
                 {
@@ -46,19 +46,19 @@ module.exports = {
                 {
                     spotId: 6,
                     userId: 5,
-                    review: "Boo’s Mansion was both creepy and fun! The ghosts kept disappearing when I looked at them... Very immersive experience!",
+                    review: "Boos Mansion was both creepy and fun! The ghosts kept disappearing when I looked at them... Very immersive experience!",
                     stars: 4,
                 },
                 {
                     spotId: 7,
                     userId: 6,
-                    review: "Yoshi’s Island was so relaxing! The beach, the palm trees, and even the friendly Yoshis made this a perfect getaway.",
+                    review: "Yoshis Island was so relaxing! The beach, the palm trees, and even the friendly Yoshis made this a perfect getaway.",
                     stars: 5,
                 },
                 {
                     spotId: 8,
                     userId: 7,
-                    review: "DK’s Treehouse was an adventure! Woke up to the sound of jungle drums and swinging vines. Loved the fresh bananas!",
+                    review: "DKs Treehouse was an adventure! Woke up to the sound of jungle drums and swinging vines. Loved the fresh bananas!",
                     stars: 4,
                 },
                 {
@@ -70,7 +70,7 @@ module.exports = {
                 {
                     spotId: 10,
                     userId: 8,
-                    review: "Toad’s Highway Hotel was a wild experience! The constant traffic made it feel like a real-life Mario Kart race. Great city vibes!",
+                    review: "Toads Highway Hotel was a wild experience! The constant traffic made it feel like a real-life Mario Kart race. Great city vibes!",
                     stars: 3,
                 }
             ],
