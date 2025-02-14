@@ -69,7 +69,7 @@ module.exports = {
                 },
                 {
                     spotId: 10,
-                    userId: 9,
+                    userId: 8,
                     review: "Toad’s Highway Hotel was a wild experience! The constant traffic made it feel like a real-life Mario Kart race. Great city vibes!",
                     stars: 3,
                 }

@@ -125,7 +125,7 @@ module.exports = {
                     updatedAt: new Date(),
                 },
                 {
-                    ownerId: 9,
+                    ownerId: 1,
                     address: "999 Koopa Ln",
                     city: "Koopa Troopa Beach",
                     state: "Tropical",
@@ -139,7 +139,7 @@ module.exports = {
                     updatedAt: new Date(),
                 },
                 {
-                    ownerId: 10,
+                    ownerId: 1,
                     address: "12 Toad Turnpike",
                     city: "Mushroom City",
                     state: "Urban Zone",
