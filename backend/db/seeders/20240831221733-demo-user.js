@@ -42,6 +42,51 @@ module.exports = {
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 },
+                {
+                    email: "mario@user.io",
+                    username: "SuperMario",
+                    firstName: "Mario",
+                    lastName: "Mario",
+                    hashedPassword: bcrypt.hashSync("mushroom"),
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+                {
+                    email: "luigi@user.io",
+                    username: "GreenMachine",
+                    firstName: "Luigi",
+                    lastName: "Mario",
+                    hashedPassword: bcrypt.hashSync("greenpower"),
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+                {
+                    email: "peach@user.io",
+                    username: "PrincessPeach",
+                    firstName: "Peach",
+                    lastName: "Toadstool",
+                    hashedPassword: bcrypt.hashSync("royalty"),
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+                {
+                    email: "bowser@user.io",
+                    username: "KingKoopa",
+                    firstName: "Bowser",
+                    lastName: "Koopa",
+                    hashedPassword: bcrypt.hashSync("firebreath"),
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+                {
+                    email: "toad@user.io",
+                    username: "MushroomBuddy",
+                    firstName: "Toad",
+                    lastName: "Mushroom",
+                    hashedPassword: bcrypt.hashSync("toadstool"),
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                }
             ],
             {}
         );
@@ -55,7 +100,11 @@ module.exports = {
             options,
             {
                 username: {
-                    [Op.in]: ["Demo-lition", "FakeUser1", "FakeUser2"],
+                    [Op.in]: [
+                        "Demo-lition", "FakeUser1", "FakeUser2",
+                        "SuperMario", "GreenMachine", "PrincessPeach",
+                        "KingKoopa", "MushroomBuddy"
+                    ],
                 },
             },
             {}

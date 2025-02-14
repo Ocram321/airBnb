@@ -20,6 +20,7 @@ const ReviewsList = ({ reviews = [], user, isOwner, spotId  }) => {
             <li key={review.id} >
               <div className="review-header">
                 <strong>{review.User ? review.User.firstName : 'Unknown User'}</strong>
+                
                 <span >{date(review.createdAt)}</span>
               </div>
               <p >{review.review}</p>
