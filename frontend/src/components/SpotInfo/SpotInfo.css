@@ -24,24 +24,29 @@
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
+    background: #eee;
 }
 
 .large-image {
     width: 60%;
     height: auto;
     border-radius: 10px;
+    object-fit: contain;
 }
 
 .small-images-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: grid;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
+    grid-template-columns: 1fr 1fr;
     width: 40%;
 }
 
 .small-image {
     width: 100%;
     height: auto;
+    object-fit: contain;
     border-radius: 10px;
 }
 

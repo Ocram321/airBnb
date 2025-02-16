@@ -20,7 +20,6 @@ const SpotDetails = () => {
     const reviews = useSelector(state => state.reviews.reviews || []);
     const user = useSelector(state => state.session?.user);
 
-
     useEffect(() => {
         dispatch(getInfoById(id));
         dispatch(fetchReviews(id));
@@ -42,7 +41,7 @@ const SpotDetails = () => {
     } = spot;
 
     const largeImage = SpotImages?.find(img => img.preview === true) || SpotImages?.[0];
-    const smallImages = SpotImages ? SpotImages.filter(img => !img.preview).slice(0, 4) : [];
+    const smallImages = SpotImages ? SpotImages.slice(0, 4) : [];
 
     const totalStars = reviews.reduce((sum, review) => sum + review.stars, 0);
     const avgRating = reviews.length > 0 ? (totalStars / reviews.length).toFixed(1) : 'New';

@@ -16,11 +16,11 @@ const ReviewsList = ({ reviews = [], user, isOwner, spotId  }) => {
 
       {reviews.length > 0 ? (
         <ul >
-          {reviews.map(review => (
+          {reviews.slice(0).reverse().map(review => (
             <li key={review.id} >
               <div className="review-header">
                 <strong>{review.User ? review.User.firstName : 'Unknown User'}</strong>
-                
+
                 <span >{date(review.createdAt)}</span>
               </div>
               <p >{review.review}</p>

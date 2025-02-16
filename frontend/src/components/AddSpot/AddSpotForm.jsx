@@ -68,7 +68,7 @@ const AddSpotForm = () => {
 
         const newSpotData = {
             ...spotForm,
-            imageUrls: [spotForm.previewImageUrl, ...spotForm.imageUrls.filter((url) => url)], // Combine images
+            imageUrls: [spotForm.previewImageUrl, ...spotForm.imageUrls.filter((url) => url)],
         };
 
 
